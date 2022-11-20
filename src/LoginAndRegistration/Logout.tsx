@@ -1,5 +1,5 @@
-import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
+import { Button } from "react-bootstrap";
 
 export const Logout = () => {
 	const handleLogout = () => {
@@ -11,7 +11,7 @@ export const Logout = () => {
 			});
 	};
 	return (
-		<Button variant="contained" color="error" onClick={handleLogout}>
+		<Button variant="light" onClick={handleLogout}>
 			Wyloguj
 		</Button>
 	);
