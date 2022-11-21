@@ -54,7 +54,7 @@ main {
 
 .form__control--input {
   background-color: #6e3ba8 !important;
-  color: #fff !important;
+  color: #f7fcfc !important;
 }
 
 input:-webkit-autofill,
@@ -66,8 +66,8 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  border: 1px solid #fff;
-  -webkit-text-fill-color: #fff;
+  border: 1px solid #f7fcfc;
+  -webkit-text-fill-color: #f7fcfc;
   box-shadow: 0 0 0px 1000px #6e3ba8 inset;
   -webkit-box-shadow: 0 0 0px 1000px #6e3ba8 inset;
   transition: background-color 5000s ease-in-out 0s;
@@ -103,7 +103,7 @@ select:-webkit-autofill:focus {
 }
 
 .menu__element::after {
-  background: #fff;
+  background: #f7fcfc;
   content: "";
   height: 3.5em;
   left: -75px;
@@ -178,10 +178,6 @@ aside {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-}
-
-:root {
-  border-color: white;
 }
 
 .side__content {

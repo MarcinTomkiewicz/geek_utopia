@@ -16,8 +16,6 @@ export const LogonData = () => {
   const [modalTitle, setModalTitle] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  console.log(modalTitle);
-
   useEffect(() => {
     if (user === null && panelChanger === "login") {
       setdetermineModal(<Login isModal={true} />);
