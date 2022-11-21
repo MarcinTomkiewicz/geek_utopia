@@ -52,7 +52,7 @@ export const Login = ({ isModal }: any) => {
       <TextInput input={`${language.labels?.email[langCode]}`} isRequired="true" type="email" name="email" data={user} setData={setUser} />
       <TextInput input={`${language.labels?.password[langCode]}`} isRequired="true" type="password" name="password" data={user} setData={setUser} />
       {password.length === 0 || email.length === 0 ? (
-        <OverlayTrigger placement="right" overlay={<Tooltip id="tooltip-login">Podaj login i hasło, aby aktywować przycisk.</Tooltip>}>
+        <OverlayTrigger placement="right" overlay={<Tooltip id="tooltip-login">{language.tooltips?.login_fill[langCode]}</Tooltip>}>
           <span className="d-inline-block">
             <Button type="submit" variant="light" disabled>
             {language.labels?.log_in[langCode]}!

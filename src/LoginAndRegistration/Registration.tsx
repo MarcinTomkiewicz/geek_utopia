@@ -82,7 +82,7 @@ export const Registration = ({ isModal }: any) => {
 
           <TextInput input={`${language.labels?.password[langCode]}`} isRequired="true" type="password" name="password" data={user} setData={setUser} />
           {nickname?.length === 0 || password.length === 0 || email.length === 0 ? (
-            <OverlayTrigger placement="right" overlay={<Tooltip id="tooltip-registration">Musisz wypełnić wszystkie pola, aby aktywować przycisk.</Tooltip>}>
+            <OverlayTrigger placement="right" overlay={<Tooltip id="tooltip-registration">{language.tooltips?.registration_fill[langCode]}</Tooltip>}>
               <span className="d-inline-block">
                 <Button type="submit" variant="light" disabled>
                   {language.headers?.create_account[langCode]}!
