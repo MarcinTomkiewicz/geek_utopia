@@ -6,6 +6,8 @@ import { useUser } from "../hooks/useUser";
 import { Logout } from "./Logout";
 import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DispatchTypes, TextInput } from "../utils/TextInput";
+import { useLanguagePacks } from "../hooks/useLanguagePacks";
+import { useLanguageSettings } from "../hooks/useLanguageSettings";
 
 const initialValues: DispatchTypes = {
   nickname: "",
@@ -14,29 +16,32 @@ const initialValues: DispatchTypes = {
   error: "",
 };
 
-const createUser = async (uid: string, nickname: string | undefined, email: string) => {
+const createUser = async (uid: string, nickname: string | undefined, email: string, language: number) => {
   await setDoc(doc(db, "users", uid), {
     mail: email,
     is_online: true,
     name: nickname,
+    language: language,
   });
 };
 
-export const Registration = () => {
+export const Registration = ({ isModal }: any) => {
   const isLogged = useUser();
+  const language = useLanguagePacks();
+  const langCode = useLanguageSettings();
   const [user, setUser] = useState<DispatchTypes>(initialValues);
 
   const usersFromDatabase: any[] = [];
 
   const { nickname, email, password } = user;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({
-      ...user,
-      [e.target.name]: e.target.value,
-      error: "",
-    });
-  };
+  //   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     setUser({
+  //       ...user,
+  //       [e.target.name]: e.target.value,
+  //       error: "",
+  //     });
+  //   };
 
   const checkUserNameInDb = async () => {
     const existingUser = query(collection(db, "users"));
@@ -53,7 +58,7 @@ export const Registration = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        createUser(user.uid, nickname, email);
+        createUser(user.uid, nickname, email, language);
         setUser(initialValues);
       })
       .catch((error) => {
@@ -95,40 +100,32 @@ export const Registration = () => {
             flexDirection: "column",
             justifyContent: "space-around",
           }}>
-          <div>Zalogowano jako {isLogged?.name}</div>
+          <div>
+            {language.labels?.already_logged[langCode]} {isLogged?.name}
+          </div>
           <div>
             <Logout />
           </div>
         </Form>
       ) : (
-        <Form
-          style={{
-            width: "80%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            marginTop: "1.5em",
-          }}
-          onSubmit={handleOnSubmit}>
-			<h4 className="mb-4">Rejestracja</h4>
-          <TextInput input="Pseudonim" isRequired="true" type="text" name="nickname" data={user} setData={setUser} />
+        <Form className={isModal ? "user__form--modal" : "user__form"} onSubmit={handleOnSubmit}>
+          <h4 className="mb-4">{language.headers?.create_account[langCode]}</h4>
+          <TextInput input={`${language.labels?.nickname[langCode]}`} isRequired="true" type="text" name="nickname" data={user} setData={setUser} />
 
-          <TextInput input="Email" isRequired="true" type="email" name="email" data={user} setData={setUser} />
+          <TextInput input={`${language.labels?.email[langCode]}`} isRequired="true" type="email" name="email" data={user} setData={setUser} />
 
-          <TextInput input="Hasło" isRequired="true" type="password" name="password" data={user} setData={setUser} />
+          <TextInput input={`${language.labels?.password[langCode]}`} isRequired="true" type="password" name="password" data={user} setData={setUser} />
           {nickname?.length === 0 || password.length === 0 || email.length === 0 ? (
-			<OverlayTrigger placement="right" overlay={<Tooltip id="tooltip-registration">Musisz wypełnić wszystkie pola, aby aktywować przycisk.</Tooltip>}>
-			<span className="d-inline-block">
-            <Button type="submit" variant="light" disabled>
-              Zarejestruj się!
-            </Button>
-			</span>
-			</OverlayTrigger>
+            <OverlayTrigger placement="right" overlay={<Tooltip id="tooltip-registration">Musisz wypełnić wszystkie pola, aby aktywować przycisk.</Tooltip>}>
+              <span className="d-inline-block">
+                <Button type="submit" variant="light" disabled>
+                  {language.headers?.create_account[langCode]}!
+                </Button>
+              </span>
+            </OverlayTrigger>
           ) : (
             <Button type="submit" className="" variant="info" color="secondary">
-              Zarejestruj się!
+              {language.headers?.create_account[langCode]}!
             </Button>
           )}
         </Form>

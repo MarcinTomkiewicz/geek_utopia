@@ -24,7 +24,7 @@ export const TextInput = ({ input, isRequired, type, name, data, setData }: Prop
   };
 
   return (
-    <FloatingLabel controlId={`floatingInput${input}`} label={`${input}${isRequired === "true" ? "*" : " (opcjonalnie)"}`} className="mb-3" style={{fontSize: "0.75rem"}}>
+    <FloatingLabel  label={`${input}${isRequired === "true" ? "*" : " (opcjonalnie)"}`} className="mb-3" style={{fontSize: "0.75rem"}}>
       <Form.Control
         style={{ height: "45px", fontSize: "1rem"}}
         className="form__control--input"
