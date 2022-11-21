@@ -33,7 +33,7 @@ const LeftPanel: FunctionComponent = () => {
           style={{
             marginTop: "2rem",
             textAlign: "center",
-            width: "60%",
+            width: "80%",
           }}>
           {language.labels?.has_account[langCode]}{" "}
           <button
@@ -53,7 +53,7 @@ const LeftPanel: FunctionComponent = () => {
           style={{
             marginTop: "2rem",
             textAlign: "center",
-            width: "60%",
+            width: "80%",
           }}>
           {language.labels?.no_account[langCode]}{" "}
           <button
@@ -67,12 +67,6 @@ const LeftPanel: FunctionComponent = () => {
         </div>
       );
     }
-    // if (user !== null && (panelChanger === "login" || panelChanger === "register")) {
-    //   setPanelChanger("statistics");
-    // }
-    // if (user === null && panelChanger === "statistics") {
-    //   setPanelChanger("login");
-    // }
   };
 
   return (

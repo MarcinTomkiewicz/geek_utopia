@@ -48,7 +48,7 @@ export const Login = ({ isModal }: any) => {
 
   return (
     <Form onSubmit={handleOnSubmit} className={isModal ? "user__form--modal" : "user__form"}>
-      <h4 className="mb-4">{language.labels?.logging[langCode]}</h4>
+      <h4 className="mb-4">{isModal ? '' : language.labels?.logging[langCode]}</h4>
       <TextInput input={`${language.labels?.email[langCode]}`} isRequired="true" type="email" name="email" data={user} setData={setUser} />
       <TextInput input={`${language.labels?.password[langCode]}`} isRequired="true" type="password" name="password" data={user} setData={setUser} />
       {password.length === 0 || email.length === 0 ? (

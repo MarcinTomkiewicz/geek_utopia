@@ -13,16 +13,31 @@ export const LogonData = () => {
 
   const [determineModal, setdetermineModal] = useState<JSX.Element>(<Login />);
   const [panelChanger, setPanelChanger] = useState<string>("login");
+  const [modalTitle, setModalTitle] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
+
+  console.log(modalTitle);
 
   useEffect(() => {
     if (user === null && panelChanger === "login") {
       setdetermineModal(<Login isModal={true} />);
+      setModalTitle(language.labels?.logging[langCode]);
     }
     if (user === null && panelChanger === "register") {
       setdetermineModal(<Registration isModal={true} />);
+      setModalTitle(language.headers?.create_account[langCode]);
     }
   }, [panelChanger, user]);
+
+  const openModal = () => {
+    setShowModal(true);
+    setModalTitle(language.labels?.logging[langCode]);
+  };
+
+  const hideModal = () => {
+	setShowModal(false);
+	setPanelChanger('login');
+  }
 
   const determinePanels = () => {
     if (user === null && panelChanger === "register") {
@@ -68,20 +83,20 @@ export const LogonData = () => {
   };
   if (user !== null && user !== undefined) {
     return (
-      <button className="logon" style={{cursor: "unset"}}>
+      <button className="logon" style={{ cursor: "unset" }}>
         {language.labels?.greet[langCode]} {user?.name}!
       </button>
     );
   } else {
     return (
       <>
-        <button className="logon" onClick={() => setShowModal(true)}>
+        <button className="logon" onClick={openModal}>
           {language.labels?.logging[langCode]}
         </button>
         <Modal
           size="sm"
           show={showModal}
-          onHide={() => setShowModal(false)}
+          onHide={hideModal}
           aria-labelledby="example-modal-sizes-login-lg"
           centered
           style={{
@@ -91,7 +106,9 @@ export const LogonData = () => {
             justifyContent: "flex-start",
             marginTop: "1.5em",
           }}>
-          <Modal.Header closeButton>{/* <Modal.Title id="example-modal-sizes-login-lg"></Modal.Title> */}</Modal.Header>
+          <Modal.Header closeButton closeVariant="white" style={{ backgroundColor: "rgba(161, 14, 184)" }}>
+            <Modal.Title>{modalTitle}</Modal.Title>
+          </Modal.Header>
           <Modal.Body style={{ backgroundColor: "rgba(0, 0, 0)" }}>
             {determineModal}
             {determinePanels()}
