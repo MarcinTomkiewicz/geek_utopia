@@ -18,6 +18,9 @@
 .env.test.local
 .env.production.local
 
+geek_utopia
+geek_utopia.pub
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

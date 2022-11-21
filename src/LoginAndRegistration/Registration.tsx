@@ -31,34 +31,14 @@ export const Registration = ({ isModal }: any) => {
   const langCode = useLanguageSettings();
   const [user, setUser] = useState<DispatchTypes>(initialValues);
 
-  const usersFromDatabase: any[] = [];
-
   const { nickname, email, password } = user;
-
-  //   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     setUser({
-  //       ...user,
-  //       [e.target.name]: e.target.value,
-  //       error: "",
-  //     });
-  //   };
-
-  const checkUserNameInDb = async () => {
-    const existingUser = query(collection(db, "users"));
-    const allUsers = await getDocs(existingUser);
-
-    allUsers.docs.forEach((user) => {
-      usersFromDatabase.push(user.data().name);
-    });
-    return usersFromDatabase;
-  };
 
   const createNewUser = (e: React.FormEvent<HTMLFormElement>) => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        createUser(user.uid, nickname, email, language);
+        createUser(user.uid, nickname, email, langCode);
         setUser(initialValues);
       })
       .catch((error) => {
@@ -71,21 +51,7 @@ export const Registration = ({ isModal }: any) => {
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let isUserInDatabase: boolean = false;
-    const usersExistingInDatabase = await checkUserNameInDb();
-    usersExistingInDatabase.map((userName) => {
-      if (userName === user.nickname) {
-        return (isUserInDatabase = true);
-      }
-      return 0;
-    });
-    if (isUserInDatabase) {
-      alert(`Uzytkownik o nazwie ${nickname} juz istnieje! Wybierz inną nazwę!`);
-      setUser({ nickname: "", email: "", password: "", error: "" });
-    } else {
-      createNewUser(e);
-    }
-    isUserInDatabase = false;
+    createNewUser(e);
   };
 
   return (
