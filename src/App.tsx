@@ -1,3 +1,4 @@
+import { Footer } from "./Footer/Footer";
 import { MainContent } from "./MainContent/MainContent";
 import { TopLogo } from "./TopLogo/TopLogo";
 import { TopMenu } from "./TopMenu/TopMenu";
@@ -9,6 +10,7 @@ function App() {
 				<TopLogo />
 				<TopMenu />
 				<MainContent />
+				<Footer />
 			</div>
 		</main>
 	);

@@ -1,19 +1,64 @@
-import { LogonData } from './LogonData/LogonData';
+import { LogonData } from "./LogonData/LogonData";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
+import { DropdownMenu } from "../utils/DropdownMenu";
+import useSticky from "../hooks/useSticky";
+import { createRef, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 export const TopMenu = () => {
   const language = useLanguagePacks();
   const langCode = useLanguageSettings();
-    return (
-        <nav className='navigation__bar'>
-            <ul className='top__menu'>
-                <li className='menu__element'><span data-content={`${language.headers?.main_page[langCode]}`} className='fancy__text'>{language.headers?.main_page[langCode]}</span></li>
-                <li className='menu__element'><span data-content={`${language.headers?.categories[langCode]}`} className='fancy__text'>{language.headers?.categories[langCode]}</span></li>
-                <li className='menu__element'><span data-content={`${language.headers?.news[langCode]}`} className='fancy__text'>{language.headers?.news[langCode]}</span></li>
-                <li className='menu__element'><span data-content={`${language.headers?.about[langCode]}`} className='fancy__text'>{language.headers?.about[langCode]}</span></li>
-            </ul>
-            <LogonData />
-        </nav>
-    )
-}
+
+  const { sticky, stickyRef } = useSticky();
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const myRef = createRef<HTMLButtonElement>();
+
+  const handleClickOutside = (e: any) => {
+    if (myRef.current !== null &&  !myRef.current.contains(e.target)) {
+        setShowDropdown(false);
+    }
+};
+
+useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+});
+
+  return (
+    <>
+      <nav className={`navigation__bar ${sticky ? "sticky" : ""}`} ref={stickyRef}>
+        <ul className="top__menu">
+          <li className="menu__element">
+            <Link to="/" className="general__text">
+              <span data-content={`${language.headers?.main_page[langCode]}`} className="fancy__text align-middle">
+                {language.headers?.main_page[langCode]}
+              </span>
+            </Link>
+          </li>
+          <DropdownMenu showDropdown={showDropdown} setShowDropdown={() => setShowDropdown(!showDropdown)} ref={myRef} className="menu__element" />
+          <li className="menu__element">
+            <span data-content={`${language.headers?.news[langCode]}`} className="fancy__text">
+              {language.headers?.news[langCode]}
+            </span>
+          </li>
+          <li className="menu__element">
+            <Link to="/about" className="general__text">
+              <span data-content={`${language.headers?.about[langCode]}`} className="fancy__text align-middle">
+                {language.headers?.about[langCode]}
+              </span>
+            </Link>
+          </li>
+        </ul>
+        <LogonData />
+      </nav>
+      {sticky && (
+        <div
+          style={{
+            height: `${stickyRef.current?.clientHeight} ${+100}px`,
+          }}
+        />
+      )}
+    </>
+  );
+};
