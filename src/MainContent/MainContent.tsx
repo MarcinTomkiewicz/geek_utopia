@@ -14,7 +14,7 @@ export const MainContent = () => {
 					<LeftPanel />
 				</div>
 				<div className="side__content"><ArticlesTab /></div>
-				<div className="side__content"></div>
+				<div className="side__content"><ArticlesTab /></div>
 			</aside>
 			<div className="articles__content">
 				<Routes>
