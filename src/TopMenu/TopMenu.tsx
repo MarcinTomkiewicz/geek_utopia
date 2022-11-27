@@ -5,8 +5,10 @@ import { DropdownMenu } from "../utils/DropdownMenu";
 import useSticky from "../hooks/useSticky";
 import { createRef, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useUser } from "../hooks/useUser";
 
 export const TopMenu = () => {
+  const user = useUser();
   const language = useLanguagePacks();
   const langCode = useLanguageSettings();
 
@@ -15,15 +17,15 @@ export const TopMenu = () => {
   const myRef = createRef<HTMLButtonElement>();
 
   const handleClickOutside = (e: any) => {
-    if (myRef.current !== null &&  !myRef.current.contains(e.target)) {
-        setShowDropdown(false);
+    if (myRef.current !== null && !myRef.current.contains(e.target)) {
+      setShowDropdown(false);
     }
-};
+  };
 
-useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-});
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  });
 
   return (
     <>
@@ -49,6 +51,17 @@ useEffect(() => {
               </span>
             </Link>
           </li>
+          {user?.is_admin ? (
+            <li className="menu__element">
+              <Link to="/admin" className="general__text">
+                <span data-content="Panel admina" className="fancy__text align-middle">
+                  Panel admina
+                </span>
+              </Link>
+            </li>
+          ) : (
+            ""
+          )}
         </ul>
         <LogonData />
       </nav>

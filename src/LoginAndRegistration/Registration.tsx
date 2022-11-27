@@ -20,6 +20,7 @@ const createUser = async (uid: string, nickname: string | undefined, email: stri
   await setDoc(doc(db, "users", uid), {
     mail: email,
     is_online: true,
+    is_admin: false,
     name: nickname,
     language: language,
   });
