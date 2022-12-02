@@ -36,7 +36,7 @@ export const ContentCarousel = ({ type }: CarouselProps): JSX.Element | null => 
     dynamicHeight={false}
     showIndicators={false}
     transitionTime={1000}
-    thumbWidth={150}
+    thumbWidth={200}
     statusFormatter={(current, total) => ``}
     >
       {articlesToShowInCarousel.map((article: ArticleParameters): any => {

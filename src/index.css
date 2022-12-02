@@ -405,3 +405,16 @@ aside {
 .carousel .slide .legend:hover {
   opacity: 1 !important;
 }
+
+.carousel .thumbs {
+  text-align: center !important;
+}
+
+.carousel .thumb {
+  border-radius: 10px !important;
+  border: #a10eb8 2px solid !important;
+}
+
+.carousel .thumb.selected {
+  border: rgba(108, 67, 184) 2px solid !important;
+}
