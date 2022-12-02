@@ -42,7 +42,7 @@ export const ContentCarousel = ({ type }: CarouselProps): JSX.Element | null => 
       {articlesToShowInCarousel.map((article: ArticleParameters): any => {
         return (
           <div key={article?.id}>
-            <img src={article?.picture} style={{height: "300px", width: "auto"}} />
+            <img src={article?.picture}/>
             <div className="legend" style={{marginTop: "100px"}}>
                 <div>
                 <h4>{article.title}</h4>

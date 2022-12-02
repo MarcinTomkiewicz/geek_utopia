@@ -386,14 +386,16 @@ aside {
 }
 
 .carousel .thumb img {
-  width: auto !important;
+  width: 100% !important;
   height: 100px !important;
   align-self: center;
+  object-fit: contain !important;
 }
 
 .carousel .slide img {
-  max-height: 100%; /* change this to whatever you want */
+  height: 300px;
   width: auto;
+  object-fit: cover;
 }
 
 .carousel .slide .legend {
