@@ -5,6 +5,7 @@ import { About } from "../About/About";
 import { ArticlesTab } from "../ArticlesTab/ArticlesTab";
 import { useUser } from "../hooks/useUser";
 import { AdminPanel } from "../AdminPanel/AdminPanel";
+import { News } from "../News/News";
 
 export const MainContent = () => {
   let location = useLocation();
@@ -27,6 +28,7 @@ export const MainContent = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/news" element={<News />} />
           {user?.is_admin ? <Route path="/admin" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
         </Routes>
       </div>

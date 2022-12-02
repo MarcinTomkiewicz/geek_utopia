@@ -2,8 +2,6 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import { Dispatch, SetStateAction } from "react";
 import { ArticleParameters } from "../AdminPanel/AdminPanel";
-import { Timestamp } from "firebase/firestore";
-import { useHighestId } from "../hooks/useHighestId";
 import { useUser } from "../hooks/useUser";
 
 export interface DispatchTypes {
@@ -50,7 +48,7 @@ export const TextInput = ({ input, isRequired, type, name, data, setData, textar
         disabled={disabled ? true : false}
         name={name}
         onChange={handleChange}
-        value={name === "date" ? data.date.toDate() : data[name]}
+        value={name === "date" ? data.date.toDate().toLocaleString()+"."+data.date.toDate().getMilliseconds() : data[name]}
       />
     </FloatingLabel>
   );
