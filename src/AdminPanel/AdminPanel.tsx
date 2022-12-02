@@ -14,6 +14,7 @@ export interface ArticleParameters {
   content: string;
   author: string;
   date: Timestamp;
+  picture?: string;
   tags: string[];
   isOnline: boolean;
   isAdult: boolean;

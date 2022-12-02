@@ -51,7 +51,7 @@ main {
 }
 
 .general__text:hover {
-  all: unset
+  all: unset;
 }
 
 .wrapper {
@@ -383,4 +383,25 @@ aside {
   box-shadow: 0px 0px 10px -1px #000000;
   z-index: -4;
   border-radius: 10px;
+}
+
+.carousel .thumb img {
+  width: auto !important;
+  height: 100px !important;
+  align-self: center;
+}
+
+.carousel .slide img {
+  max-height: 100%; /* change this to whatever you want */
+  width: auto;
+}
+
+.carousel .slide .legend {
+  bottom: 0px !important;
+  background-color: rgba(108, 67, 184) !important;
+  opacity: 0.5 !important;
+}
+
+.carousel .slide .legend:hover {
+  opacity: 1 !important;
 }
