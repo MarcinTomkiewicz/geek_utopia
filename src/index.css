@@ -51,7 +51,7 @@ main {
 }
 
 .general__text:hover {
-  all: unset
+  all: unset;
 }
 
 .wrapper {
@@ -435,4 +435,40 @@ aside {
   box-shadow: 0px 0px 10px -1px #000000;
   z-index: -4;
   border-radius: 10px;
+}
+
+.carousel .thumb img {
+  width: 100% !important;
+  height: 100px !important;
+  align-self: center;
+  object-fit: contain !important;
+}
+
+.carousel .slide img {
+  height: 300px;
+  width: auto;
+  object-fit: cover;
+}
+
+.carousel .slide .legend {
+  bottom: 0px !important;
+  background-color: rgba(108, 67, 184) !important;
+  opacity: 0.5 !important;
+}
+
+.carousel .slide .legend:hover {
+  opacity: 1 !important;
+}
+
+.carousel .thumbs {
+  text-align: center !important;
+}
+
+.carousel .thumb {
+  border-radius: 10px !important;
+  border: #a10eb8 2px solid !important;
+}
+
+.carousel .thumb.selected {
+  border: rgba(108, 67, 184) 2px solid !important;
 }

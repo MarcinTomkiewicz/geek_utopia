@@ -1,5 +1,5 @@
 import { getAuth, signOut } from "firebase/auth";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import { useUser } from "../hooks/useUser";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
@@ -18,6 +18,10 @@ export const Logout = () => {
   };
 
   const user = useUser();
+
+  if(language === undefined) {
+    return <Spinner animation="border" variant="info" size="sm" />
+  }
 
   return (
     <div
