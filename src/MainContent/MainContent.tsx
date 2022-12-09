@@ -4,12 +4,18 @@ import { Home } from "../Home/Home";
 import { About } from "../About/About";
 import { ArticlesTab } from "../ArticlesTab/ArticlesTab";
 import { useUser } from "../hooks/useUser";
-import { AdminPanel } from "../AdminPanel/AdminPanel";
+import { AdminPanel, ArticleParameters } from "../AdminPanel/AdminPanel";
 import { News } from "../News/News";
+import { useGetArticles } from "../hooks/useGetArticles";
+import { ShowArticles } from "../ShowArticles/ShowArticles";
+import { ShowFullArticle } from "../ShowFullArticle/ShowFullArticle";
 
 export const MainContent = () => {
   let location = useLocation();
   const user = useUser();
+
+  const news = useGetArticles("news");
+  const articles = useGetArticles("articles")
 
   return (
     <main className="main__content">
@@ -30,6 +36,9 @@ export const MainContent = () => {
           <Route path="/about" element={<About />} />
           <Route path="/news" element={<News />} />
           {user?.is_admin ? <Route path="/admin" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
+          {news.map((newsItem: ArticleParameters) => {
+            return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle type="news" id={newsItem?.id} />} />
+          })}
         </Routes>
       </div>
     </main>

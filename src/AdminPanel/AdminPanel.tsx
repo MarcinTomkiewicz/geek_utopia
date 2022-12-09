@@ -37,9 +37,12 @@ export interface ArticleParameters {
 	author: string;
 	date: Timestamp;
 	picture: string;
+	rating: number[];
 	tags: string[];
 	isOnline: boolean;
 	isAdult: boolean;
+	is_online?: boolean;
+	is_adult?: boolean;
 	databaseTitle: string;
 }
 
@@ -69,6 +72,7 @@ export const AdminPanel = (): any => {
 		author: "",
 		date: Timestamp.fromDate(currentDate),
 		picture: "",
+		rating: [],
 		tags: [""],
 		isOnline: false,
 		isAdult: false,
@@ -134,6 +138,7 @@ export const AdminPanel = (): any => {
 				author: newArticleData.author,
 				date: newArticleData.date,
 				picture: newArticleData.picture,
+				rating: newArticleData.rating,
 				tags: newArticleData.tags,
 				is_online: newArticleData.isOnline,
 				is_adult: newArticleData.isAdult,

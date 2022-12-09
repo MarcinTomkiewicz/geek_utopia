@@ -1,10 +1,11 @@
 import { ContentCarousel } from "../Carousel/ContentCarousel"
+import { ShowArticles } from "../ShowArticles/ShowArticles"
 
 export const Home = () => {
     return (
         <div className="articles__content--wrapper">
-        <h1 className="text-center">Witaj na Geek Utopii</h1>
         <ContentCarousel type="news"></ContentCarousel>
+        <ShowArticles type="news" howMany={10} />
         </div>
     )
 }
