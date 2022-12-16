@@ -71,7 +71,7 @@ export const Registration = ({ isModal }: any) => {
             {language.labels?.already_logged[langCode]} {isLogged?.name}
           </div>
           <div>
-            <Logout />
+            <Logout isInLeftPanel={false}/>
           </div>
         </Form>
       ) : (

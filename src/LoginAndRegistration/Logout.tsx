@@ -4,7 +4,11 @@ import { useUser } from "../hooks/useUser";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
 
-export const Logout = () => {
+interface LogoutType {
+  isInLeftPanel: boolean
+}
+
+export const Logout = ({isInLeftPanel}: LogoutType) => {
   const language = useLanguagePacks();
   const langCode = useLanguageSettings();
 
@@ -25,15 +29,7 @@ export const Logout = () => {
 
   return (
     <div
-      style={{
-        width: "80%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        marginTop: "1.5em",
-      }}>
+      className={!isInLeftPanel ? "user__form" : "logout__button"}>
       <Button variant="info" onClick={handleLogout}>
 	  {language.buttons?.log_out[langCode]}!
       </Button>

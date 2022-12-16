@@ -22,7 +22,7 @@ const LeftPanel: FunctionComponent = () => {
       setLeftPanel(<Registration isModal={false} />);
     }
     if (user !== null) {
-      setLeftPanel(<Logout />);
+      setLeftPanel(<Logout isInLeftPanel={false}/>);
     }
   }, [panelChanger, user]);
 

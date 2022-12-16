@@ -32,8 +32,8 @@ export const useGetArticles = (category?: string): any => {
 			if (currentCategory === category) {
 				const getArticlesFromDB = async () => {
 					const docRef = doc(db, "content", currentCategory);
-					const docSnap = await getDoc(docRef);
-					setArticlesList(docSnap.data());
+					const docSnap = await getDoc(docRef);					
+					setArticlesList(docSnap.data());					
 				};
 				getArticlesFromDB();
 			}

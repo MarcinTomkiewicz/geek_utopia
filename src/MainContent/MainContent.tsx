@@ -15,7 +15,7 @@ export const MainContent = () => {
   const user = useUser();
 
   const news = useGetArticles("news");
-  const articles = useGetArticles("articles")
+  const articles = useGetArticles("articles");
 
   return (
     <main className="main__content">
@@ -37,7 +37,10 @@ export const MainContent = () => {
           <Route path="/news" element={<News />} />
           {user?.is_admin ? <Route path="/admin" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
           {news.map((newsItem: ArticleParameters) => {
-            return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle type="news" id={newsItem?.id} />} />
+            return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle type="news" id={newsItem?.id} />} />;
+          })}
+          {articles.map((article: ArticleParameters) => {
+            return <Route path={`/news/${article.id}`} key={article.id} element={<ShowFullArticle type="articles" id={article?.id} />} />;
           })}
         </Routes>
       </div>

@@ -4,6 +4,7 @@ import { useLanguagePacks } from "../../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../../hooks/useLanguageSettings";
 import { useUser } from "../../hooks/useUser";
 import { Login } from "../../LoginAndRegistration/Login";
+import { Logout } from "../../LoginAndRegistration/Logout";
 import { Registration } from "../../LoginAndRegistration/Registration";
 
 export const LogonData = () => {
@@ -81,9 +82,12 @@ export const LogonData = () => {
   };
   if (user !== null && user !== undefined) {
     return (
-      <button className="logon" style={{ cursor: "unset" }}>
+      <div className="d-flex flex-row justify-content-evenly align-items-center mx-3" style={{width: "13%"}}>
+      <button className="logon d-flex w-100" style={{ cursor: "unset", margin: "0", padding: "0" }}>
         {language.labels?.greet[langCode]} {user?.name}!
       </button>
+      <Logout isInLeftPanel />
+      </div>
     );
   } else {
     return (

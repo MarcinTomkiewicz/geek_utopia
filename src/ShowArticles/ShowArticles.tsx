@@ -62,7 +62,7 @@ export const ShowArticles = ({
 
 				return (
 					<>
-						<Link to={linkToNavigate} className="general__text">
+						<Link to={linkToNavigate} className="general__text" style={{cursor: "pointer"}}>
 							<div
 								className="d-flex justify-content-between align-items-center flex-row w-100 mb-3 article__list"
 								key={article.id}
