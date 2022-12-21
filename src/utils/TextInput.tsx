@@ -20,9 +20,10 @@ interface Properties {
   setData: Dispatch<SetStateAction<DispatchTypes>> | Dispatch<SetStateAction<ArticleParameters>> | any;
   textarea?: boolean;
   disabled?: boolean;
+  height?: number;
 }
 
-export const TextInput = ({ input, isRequired, type, name, data, setData, textarea, disabled }: Properties) => {
+export const TextInput = ({ input, isRequired, type, name, data, setData, textarea, disabled, height }: Properties) => {
   const user = useUser();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +41,7 @@ export const TextInput = ({ input, isRequired, type, name, data, setData, textar
     <FloatingLabel  label={`${input}${isRequired === "true" ? "*" : " (opcjonalnie)"}`} className="mb-3" style={{fontSize: "0.75rem"}}>
       <Form.Control
         as={textarea ? "textarea" : 'input'}
-        style={textarea ? {height: "200px", fontSize: "1rem"} : { height: "45px", fontSize: "1rem"}}
+        style={textarea ? {height: height, fontSize: "1rem"} : { height: "45px", fontSize: "1rem"}}
         className="form__control--input"
         type={type}
         placeholder={`${name}${isRequired === "true" ? "*" : " (opcjonalnie)"}`}

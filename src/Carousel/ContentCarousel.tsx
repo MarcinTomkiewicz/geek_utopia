@@ -7,88 +7,53 @@ import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 interface CarouselProps {
-	type?: string;
+  type?: string;
 }
 
-export const ContentCarousel = ({
-	type,
-}: CarouselProps): JSX.Element | null => {
-	const articles = useGetArticles(type);
-	const articlesToShowInCarousel = articles.slice(0, 5);
+export const ContentCarousel = ({ type }: CarouselProps): JSX.Element | null => {
+  const articles = useGetArticles(type);
+  const articlesToShowInCarousel = articles.slice(0, 5);
 
-	if (articlesToShowInCarousel.length === 0) {
-		return null;
-	}
+  if (articlesToShowInCarousel.length === 0) {
+    return null;
+  }
 
-	return (
-		<>
-			<Carousel
-				infiniteLoop
-				centerMode
-				centerSlidePercentage={80}
-				showArrows
-				showThumbs
-				autoPlay
-				stopOnHover
-				swipeable
-				dynamicHeight={false}
-				showIndicators={false}
-				transitionTime={1000}
-				thumbWidth={200}
-				statusFormatter={(current, total) => ``}
-			>
-				{articlesToShowInCarousel.map(
-					(article: ArticleParameters): any => {
-						return (
-							<div key={article?.id}>
-								<img src={article?.picture} />
-								<div
-									className="legend d-flex justify-content-between align-items-start flex-column"
-									style={{ marginTop: "100px" }}
-								>
-								<Link to={`/${type}/${article.id}`} className="general__text w-100" style={{cursor: "pointer"}}>
-								<div className="d-flex justify-content-between align-items-center w-100 mb-3">
-										<div className="d-flex align-items-center flex-row w-80">
-											<h3 style={{ marginBottom: "0" }}>
-												{article?.title}{" "}
-											</h3>
-											{article.is_adult ? (
-												<h5
-													className="mx-2 align-middle"
-													style={{
-														marginBottom: "0",
-													}}
-												>
-													<Badge bg="danger">
-														18+
-													</Badge>
-												</h5>
-											) : (
-												""
-											)}
-										</div>
-										<div className="d-flex justify-content-between align-items-start flex-column mt-1">
-											<div>
-												Data publikacji:{" "}
-												{article.date
-													.toDate()
-													.toLocaleString()}
-											</div>
-											<div className="w-100 text-end">
-												Autor: {article?.author}
-											</div>
-										</div>
-									</div>
-									<div className="w-100 fs-6 text-start">
-										{article?.content.substring(0, 200)}...
-									</div>
-								</Link>
-								</div>
-							</div>
-						);
-					}
-				)}
-			</Carousel>
-		</>
-	);
+  return (
+    <>
+      <Carousel infiniteLoop centerMode centerSlidePercentage={80} showArrows showThumbs autoPlay stopOnHover swipeable dynamicHeight={false} showIndicators={false} transitionTime={1000} thumbWidth={200} statusFormatter={(current, total) => ``}>
+        {articlesToShowInCarousel.map((article: ArticleParameters): any => {
+          return (
+            <div key={article?.id}>
+              <img src={article?.picture} />
+              <div className="legend d-flex justify-content-between align-items-start flex-column" style={{ marginTop: "100px" }}>
+                <Link to={`/${type}/${article.id}`} className="general__text w-100" style={{ cursor: "pointer" }}>
+                  <div className="d-flex justify-content-between align-items-center w-100 mb-3">
+                    <div className="d-flex align-items-center flex-row w-80">
+                      <h3 style={{ marginBottom: "0" }}>{article?.title} </h3>
+                      {article.is_adult ? (
+                        <h5
+                          className="mx-2 align-middle"
+                          style={{
+                            marginBottom: "0",
+                          }}>
+                          <Badge bg="danger">18+</Badge>
+                        </h5>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                    <div className="d-flex justify-content-between align-items-start flex-column mt-1">
+                      <div>Data publikacji: {article.date.toDate().toLocaleString()}</div>
+                      <div className="w-100 text-end">Autor: {article?.author}</div>
+                    </div>
+                  </div>
+                  <div className="w-100 fs-6 text-start">{article?.short_descr === undefined || article?.short_descr === "" ? article?.content.substring(0, 200) : article?.short_descr.substring(0, 200)}...</div>
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </Carousel>
+    </>
+  );
 };

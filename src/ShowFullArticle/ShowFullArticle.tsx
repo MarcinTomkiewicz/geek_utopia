@@ -1,9 +1,10 @@
 import { FirebaseApp } from "firebase/app";
 import { doc, DocumentData, Firestore, FirestoreDataConverter, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
+import { useSnapshotArticles } from "../hooks/useSnapshotArticles";
 
 interface FullArticleProps {
   type: string;
@@ -53,6 +54,7 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
       setArticleForRating(doc.data());	  
     });
   }, []);
+ 
 
   useEffect(() => {
     const calculateAverageRatingFromSnapshot = (): void => {
@@ -92,6 +94,7 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
                   style={{
                     height: "30%",
                     maxHeight: "400px",
+                    borderRadius: "10px"
                   }}></img>
                 <div className="d-flex justify-content-start align-items-start flex-column mt-3 w-100 ">
                   <div style={{ fontSize: "0.75rem" }}>Data publikacji: {generateDate(article)}</div>
@@ -99,7 +102,8 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
                     Autor: {article?.author}
                   </div>
                 </div>
-                <h1 className="mb-3">{article.title}</h1>
+                <h1 className="mb-4">{article.title}</h1>
+                <div className="mb-4 text-left w-100" style={{fontWeight: "bold"}}>{article.short_descr}</div>
                 {article.content.split("\n").map((paragraph: string) => {
                   return (
                     <div className="text-left w-100 mb-2" style={{ textAlign: "justify" }}>
@@ -150,7 +154,7 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
                   }
                 })}
               </div>
-              <div>{article.rating.length === 0 || article.rating === undefined ? "Nie ma jeszcze ocen" : `Ocena łączna: ${averageRating.toFixed(2)} / Ocen: ${article.rating.length}`}</div>
+              <div>{article.rating.length === 0 || article.rating === undefined ? "Nie ma jeszcze ocen" : `Ocena łączna: ${averageRating.toFixed(2)} / Ocen: ${article.rating?.length}`}</div>
             </>
           );
         }

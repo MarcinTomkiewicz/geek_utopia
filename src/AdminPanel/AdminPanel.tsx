@@ -43,6 +43,7 @@ export interface ArticleParameters {
 	isAdult: boolean;
 	is_online?: boolean;
 	is_adult?: boolean;
+	short_descr?: string;
 	databaseTitle: string;
 }
 
@@ -74,6 +75,7 @@ export const AdminPanel = (): any => {
 		picture: "",
 		rating: [],
 		tags: [""],
+		short_descr: "",
 		isOnline: false,
 		isAdult: false,
 		databaseTitle: "",
@@ -139,6 +141,7 @@ export const AdminPanel = (): any => {
 				date: newArticleData.date,
 				picture: newArticleData.picture,
 				rating: newArticleData.rating,
+				short_descr: newArticleData.short_descr,
 				tags: newArticleData.tags,
 				is_online: newArticleData.isOnline,
 				is_adult: newArticleData.isAdult,
@@ -159,6 +162,7 @@ export const AdminPanel = (): any => {
 		date,
 		picture,
 		tags,
+		short_descr,
 		isOnline,
 		isAdult,
 	} = data;
@@ -193,7 +197,6 @@ export const AdminPanel = (): any => {
 					console.log("Shit");
 				});
 		}
-    forceUpdate();
 	};
 
 	return (
@@ -237,6 +240,16 @@ export const AdminPanel = (): any => {
 					data={data}
 					setData={setData}
 				/>
+								<TextInput
+					input="Krótki opis"
+					isRequired="true"
+					type="text"
+					name="short_descr"
+					data={data}
+					setData={setData}
+					textarea
+					height={75}
+				/>
 				<TextInput
 					input="Treść"
 					isRequired="true"
@@ -245,6 +258,7 @@ export const AdminPanel = (): any => {
 					data={data}
 					setData={setData}
 					textarea
+					height={200}
 				/>
 				<Form.Group controlId="formFile" className="mb-3">
 					<Form.Label>Dodaj obrazek</Form.Label>

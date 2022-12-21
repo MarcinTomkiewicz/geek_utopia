@@ -9,6 +9,7 @@ import { News } from "../News/News";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { ShowArticles } from "../ShowArticles/ShowArticles";
 import { ShowFullArticle } from "../ShowFullArticle/ShowFullArticle";
+import { InstagramFeed } from "../InstagramFeed/InstagramFeed";
 
 export const MainContent = () => {
   let location = useLocation();
@@ -24,10 +25,10 @@ export const MainContent = () => {
           <LeftPanel />
         </div>
         <div className="side__content">
-          <ArticlesTab />
+        <ArticlesTab type="news" />  
         </div>
         <div className="side__content">
-          <ArticlesTab />
+          <ArticlesTab type="articles"/>
         </div>
       </aside>
       <div className="articles__content">
