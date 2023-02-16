@@ -28,7 +28,7 @@ export const MainContent = () => {
         <ArticlesTab type="news" />  
         </div>
         <div className="side__content">
-          <ArticlesTab type="articles"/>
+        <ArticlesTab type="articles"/>
         </div>
       </aside>
       <div className="articles__content">
@@ -36,7 +36,7 @@ export const MainContent = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/news" element={<News />} />
-          {user?.is_admin ? <Route path="/admin" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
+          {user?.is_admin ? <Route path="/admin/*" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
           {news.map((newsItem: ArticleParameters) => {
             return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle type="news" id={newsItem?.id} />} />;
           })}

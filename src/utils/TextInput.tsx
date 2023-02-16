@@ -27,6 +27,10 @@ export const TextInput = ({ input, isRequired, type, name, data, setData, textar
   const user = useUser();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (name === "tags") {
+      const tags = e.target.value;
+      setData({ ...data, [name]: tags.split("\n") });
+    }
     setData({ ...data, [name]: e.target.value });
   };
 

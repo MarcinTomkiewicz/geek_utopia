@@ -52,7 +52,7 @@ export const ShowArticles = ({ type, howMany }: ArticlesProps): JSX.Element | nu
       {articlesToShowOnList.map((article: ArticleParameters) => {
         const linkToNavigate = `/${type}/${article.id}`;
         return (
-          <>
+          <div key={article.id} className="d-flex flex-column gap-2 w-100">
             <Link to={linkToNavigate} className="general__text" style={{ cursor: "pointer" }}>
               <div className="d-flex justify-content-between align-items-center flex-row w-100 mb-3 article__list" key={article.id}>
                 <div className="articles__image--container">
@@ -83,7 +83,7 @@ export const ShowArticles = ({ type, howMany }: ArticlesProps): JSX.Element | nu
                 </div>
               </div>
             </Link>
-          </>
+          </div>
         );
       })}
     </>

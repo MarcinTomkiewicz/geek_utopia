@@ -89,6 +89,7 @@ main {
 }
 
 .form__control--input {
+  display: flex;
   background-color: #6e3ba8 !important;
   color: #f7fcfc !important;
 }
@@ -367,6 +368,7 @@ aside {
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .news__wrapper {
@@ -481,7 +483,7 @@ aside {
   width: 100%;
   max-height: 125px;
   border: solid 1px white;
-  object-fit: contain !important;
+  object-fit: cover !important;
   border-radius: 10px;
 }
 
