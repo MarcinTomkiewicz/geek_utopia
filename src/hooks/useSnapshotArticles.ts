@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { db } from "../config/firebaseConfig";
 
-export const useSnapshotArticles = (type: string): any => {
+export const useSnapshotArticles = (type: string | undefined): any => {
   const [snapshotArticles, setSnapshotArticles] = useState<DocumentData>();
   const [articlesToReturn, setArticlesToReturn] = useState<DocumentData>();
 
@@ -21,6 +21,10 @@ export const useSnapshotArticles = (type: string): any => {
 };
 
   useEffect(() => {
+    if (type === undefined) {
+      return;
+    }
+    
     const articleOnSnapshot = onSnapshot(doc(db, "content", type), (doc) => {
       setSnapshotArticles(doc.data());
     });
@@ -29,20 +33,22 @@ export const useSnapshotArticles = (type: string): any => {
   useEffect(() => {
     const createArticlesList = (): any => {
       if (snapshotArticles === undefined) {
-        return null;
+        return;
       }
       const articlesArray = Object.values(snapshotArticles);
-      const sortedArticlesArray = articlesArray.sort(compareIdsForSorting);
-      console.log(sortedArticlesArray);
+      const sortedArticlesArray: ArticleParameters[] = articlesArray.sort(compareIdsForSorting);
       
       return setArticlesToReturn(sortedArticlesArray);
     };
+    if (articlesToReturn === undefined) {
     createArticlesList();
-  }, []);
+    }
+  }, []);  
 
-  if (articlesToReturn === undefined) {
-    return;
-  }
+  // if (articlesToReturn === undefined) {
+    
+  //   return;
+  // }  
   
   return articlesToReturn;
   

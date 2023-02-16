@@ -20,7 +20,7 @@ export const ContentCarousel = ({ type }: CarouselProps): JSX.Element | null => 
 
   return (
     <>
-      <Carousel infiniteLoop centerMode centerSlidePercentage={80} showArrows showThumbs autoPlay stopOnHover swipeable dynamicHeight={false} showIndicators={false} transitionTime={1000} thumbWidth={200} statusFormatter={(current, total) => ``}>
+      <Carousel infiniteLoop centerMode centerSlidePercentage={80} showArrows showThumbs={false} autoPlay stopOnHover swipeable dynamicHeight={false} showIndicators={false} transitionTime={1000} statusFormatter={(current, total) => ``}>
         {articlesToShowInCarousel.map((article: ArticleParameters): any => {
           return (
             <div key={article?.id}>

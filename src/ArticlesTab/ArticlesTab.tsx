@@ -9,7 +9,7 @@ import { useLanguageSettings } from "../hooks/useLanguageSettings";
 import { useEffect, useState } from "react";
 import { useSnapshotArticles } from "../hooks/useSnapshotArticles";
 
-export const ArticlesTab = ({ type }: any) => {
+export const ArticlesTab = ({ type }: any): JSX.Element | null => {
 
   const [articleForRating, setArticleForRating] = useState<DocumentData>();
   const [averageRating, setAverageRatingFromSnapshot] = useState<number>(0);
@@ -25,7 +25,7 @@ export const ArticlesTab = ({ type }: any) => {
     if (articleForRating === undefined) {
       return 0;
     }
-    const ratings = articleForRating[`${type}_id_${article.id}`].rating;
+    const ratings = articleForRating[`${type}_id_${article.id}`]?.rating;
     rating = ratings?.reduce((partialSum: number, a: number) => partialSum + a, 0) / ratings?.length;
     if (isNaN(rating)) {
         return 0;
@@ -82,7 +82,7 @@ export const ArticlesTab = ({ type }: any) => {
       {articlesToShowOnList.map((article: ArticleParameters) => {
         const linkToNavigate = `/${type}/${article.id}`;
         return (
-          <>
+          <div key={article.id} className="d-flex flex-column gap-2 w-100">
             <Link to={linkToNavigate} className="general__text" style={{ cursor: "pointer", width: "100%" }}>
               <div className="d-flex justify-content-between align-items-center flex-row w-100 mb-3 article__list--feed" key={article.id}>
                 <div className="d-flex mt-3 mx-3 justify-content-start align-items-start flex-column w-100 h-100">
@@ -120,7 +120,7 @@ export const ArticlesTab = ({ type }: any) => {
                 </div>
               </div>
             </Link>
-          </>
+          </div>
         );
       })}
     </div>
