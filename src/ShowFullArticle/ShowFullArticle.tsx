@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
-import { useSnapshotArticles } from "../hooks/useSnapshotArticles";
 
 interface FullArticleProps {
   type: string;

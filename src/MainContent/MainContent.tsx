@@ -19,8 +19,8 @@ export const MainContent = () => {
   const articles = useGetArticles("articles");
 
   return (
-    <main className="main__content">
-      <aside>
+    <main className="pt-2 d-flex flex-row justify-content-between align-items-start gap-3">
+      <aside className="d-flex flex-column justify-content-start w-25">
         <div className="side__content">
           <LeftPanel />
         </div>
@@ -31,7 +31,7 @@ export const MainContent = () => {
           <ArticlesTab type="articles"/>
         </div>
       </aside>
-      <div className="articles__content">
+      <div className="articles__content d-flex flex-column justify-content-start align-items-center w-75 pb-5">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

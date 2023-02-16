@@ -1,5 +1,4 @@
 import { ContentCarousel } from "../Carousel/ContentCarousel"
-import { useSnapshotArticles } from "../hooks/useSnapshotArticles"
 import { ShowArticles } from "../ShowArticles/ShowArticles"
 
 export const Home = () => { 
