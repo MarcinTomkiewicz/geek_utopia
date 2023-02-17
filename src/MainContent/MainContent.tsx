@@ -1,15 +1,13 @@
 import LeftPanel from "../LeftPanel/LeftPanel";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Home } from "../Home/Home";
 import { About } from "../About/About";
 import { ArticlesTab } from "../ArticlesTab/ArticlesTab";
 import { useUser } from "../hooks/useUser";
 import { AdminPanel, ArticleParameters } from "../AdminPanel/AdminPanel";
-import { News } from "../News/News";
+import { ArticlesOnlyPage } from "../ArticlesOnlyPage/ArticlesOnlyPage";
 import { useGetArticles } from "../hooks/useGetArticles";
-import { ShowArticles } from "../ShowArticles/ShowArticles";
 import { ShowFullArticle } from "../ShowFullArticle/ShowFullArticle";
-import { InstagramFeed } from "../InstagramFeed/InstagramFeed";
 
 export const MainContent = () => {
   let location = useLocation();
@@ -35,7 +33,7 @@ export const MainContent = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/news" element={<News />} />
+          <Route path="/news" element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} />} />
           {user?.is_admin ? <Route path="/admin/*" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
           {news.map((newsItem: ArticleParameters) => {
             return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle type="news" id={newsItem?.id} />} />;

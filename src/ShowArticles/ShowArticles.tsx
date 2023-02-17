@@ -5,12 +5,13 @@ import { useGetArticles } from "../hooks/useGetArticles";
 
 interface ArticlesProps {
   type: string;
+  startFrom: number;
   howMany: number;
 }
 
-export const ShowArticles = ({ type, howMany }: ArticlesProps): JSX.Element | null => {
+export const ShowArticles = ({ type, startFrom, howMany }: ArticlesProps): JSX.Element | null => {
   const articles = useGetArticles(type);
-  const articlesToShowOnList = articles.slice(6, howMany);
+  const articlesToShowOnList = articles.slice(startFrom, howMany).filter((article: ArticleParameters) => article.is_online);
 
   if (articles === undefined) {
     return null;

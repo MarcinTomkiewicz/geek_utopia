@@ -21,6 +21,7 @@
     "react-facebook": "^9.0.12",
     "react-image-text-overlay": "^1.0.3",
     "react-instafeed": "^1.0.0",
+    "react-paginate": "^8.1.4",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
