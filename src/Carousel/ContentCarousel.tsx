@@ -4,14 +4,11 @@ import { useGetArticles } from "../hooks/useGetArticles";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { ArticleParameters } from "../utils/interfaces";
+import { ArticleParameters, ArticleType } from "../utils/interfaces";
+import { Tags } from "../atoms/Tags/Tags";
 
-interface CarouselProps {
-  type?: string;
-}
-
-export const ContentCarousel = ({ type }: CarouselProps): JSX.Element | null => {
-  const articles = useGetArticles(type);
+export const ContentCarousel = ({ articleType }: ArticleType): JSX.Element | null => {
+  const articles = useGetArticles(articleType);
   const articlesToShowInCarousel = articles.slice(0, 5);
 
   if (articlesToShowInCarousel.length === 0) {
@@ -26,10 +23,10 @@ export const ContentCarousel = ({ type }: CarouselProps): JSX.Element | null => 
             <div key={article?.id}>
               <img src={article?.picture} />
               <div className="legend d-flex justify-content-between align-items-start flex-column" style={{ marginTop: "100px" }}>
-                <Link to={`/${type}/${article.id}`} className="general__text w-100" style={{ cursor: "pointer" }}>
+                <Link to={`/${articleType}/${article.id}`} className="general__text w-100" style={{ cursor: "pointer" }}>
                   <div className="d-flex justify-content-between align-items-center w-100 mb-3">
                     <div className="d-flex align-items-center flex-row w-80">
-                      <h3 style={{ marginBottom: "0" }}>{article?.title} </h3>
+                      <h2 style={{ marginBottom: "0" }}>{article?.title} </h2>
                       {article.is_adult ? (
                         <h5
                           className="mx-2 align-middle"
@@ -47,8 +44,9 @@ export const ContentCarousel = ({ type }: CarouselProps): JSX.Element | null => 
                       <div className="w-100 text-end">Autor: {article?.author}</div>
                     </div>
                   </div>
-                  <div className="w-100 fs-6 text-start">{article?.short_descr === undefined || article?.short_descr === "" ? article?.content.substring(0, 200) : article?.short_descr.substring(0, 200)}...</div>
                 </Link>
+                    <Tags article={article} />
+                  <div className="w-100 fs-6 text-start">{article?.short_descr === undefined || article?.short_descr === "" ? article?.content.substring(0, 200) : article?.short_descr.substring(0, 200)}...</div>
               </div>
             </div>
           );

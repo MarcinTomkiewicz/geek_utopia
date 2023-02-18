@@ -1,17 +1,12 @@
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { Tags } from "../atoms/Tags/Tags";
 import { useGetArticles } from "../hooks/useGetArticles";
-import { ArticleParameters, Months } from "../utils/interfaces";
+import { ArticleParameters, ArticleType, Months } from "../utils/interfaces";
 import { monthLabels } from "../utils/utilsObjects";
 
-interface ArticlesProps {
-  type: string;
-  startFrom: number;
-  howMany: number;
-}
-
-export const ShowArticles = ({ type, startFrom, howMany }: ArticlesProps): JSX.Element | null => {
-  const articles = useGetArticles(type);
+export const ShowArticles = ({ articleType, startFrom, howMany }: ArticleType): JSX.Element | null => {
+  const articles = useGetArticles(articleType);
   const articlesToShowOnList = articles.slice(startFrom, howMany).filter((article: ArticleParameters) => article.is_online);
 
   if (articles === undefined) {
@@ -32,7 +27,7 @@ export const ShowArticles = ({ type, startFrom, howMany }: ArticlesProps): JSX.E
   return (
     <>
       {articlesToShowOnList.map((article: ArticleParameters) => {
-        const linkToNavigate = `/${type}/${article.id}`;
+        const linkToNavigate = `/${articleType}/${article.id}`;
         return (
           <div key={article.id} className="d-flex flex-column gap-2 w-100">
             <Link to={linkToNavigate} className="general__text" style={{ cursor: "pointer" }}>
@@ -58,6 +53,7 @@ export const ShowArticles = ({ type, startFrom, howMany }: ArticlesProps): JSX.E
                   <div className="d-flex justify-content-between align-items-center flex-row w-100 mb-3">
                     <div style={{ fontSize: "0.75rem" }}>{generateDate(article)}</div>
                   </div>
+                  <Tags article={article} />
                   <div>
                     {article?.short_descr === undefined || article?.short_descr === "" ? article?.content.substring(0, 500) : article?.short_descr}
                     ...

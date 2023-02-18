@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import { ArticleParameters, Months } from "../utils/interfaces";
 import { badgeBackground, monthLabels } from "../utils/utilsObjects";
+import { Tags } from "../atoms/Tags/Tags";
 
 interface ArticlesPageProps {
 	articleType: string;
@@ -109,26 +110,7 @@ export const ArticlesOnlyPage = ({
 								</div>
 							</div>
 						</Link>
-						<div className="d-flex flex-row justify-content-start gap-2 align-items-center mt-1 mb-3 flex-wrap w-100">
-							{news[0]?.tags[0] !== ""
-								? news[0]?.tags.map((tag: any) => {
-										return (
-											<Badge
-												bg={
-													badgeBackground[
-														Math.floor(
-															Math.random() *
-																badgeBackground.length
-														)
-													]
-												}
-											>
-												{tag}
-											</Badge>
-										);
-								  })
-								: "Nie ma żadnych tagów do tego artykułu"}
-						</div>
+						<Tags article={news[0]} />
 						<div>
 							{news[0]?.short_descr === undefined ||
 							news[0]?.short_descr === ""
@@ -213,7 +195,7 @@ export const ArticlesOnlyPage = ({
 										/>
 									</Link>
 								</div>
-								<div className="d-flex mt-2 mx-3 justify-content-start align-items-start flex-column w-100 h-100">
+								<div className="d-flex mt-2 justify-content-start align-items-start flex-column w-100 h-100">
 									<Link
 										to={linkToNavigate}
 										className="general__text"
@@ -252,29 +234,7 @@ export const ArticlesOnlyPage = ({
 											</div>
 										</div>
 									</Link>
-									<div className="d-flex flex-row justify-content-start gap-2 align-items-center mt-1 mb-3 flex-wrap w-100">
-										{article?.tags[0] !== ""
-											? article?.tags.map((tag) => {
-													if (tag === "") {
-														return;
-													}
-													return (
-														<Badge
-															bg={
-																badgeBackground[
-																	Math.floor(
-																		Math.random() *
-																			badgeBackground.length
-																	)
-																]
-															}
-														>
-															{tag}
-														</Badge>
-													);
-											  })
-											: "Nie ma żadnych tagów do tego artykułu"}
-									</div>
+									<Tags article={article} />
 								</div>
 							</div>
 						</div>

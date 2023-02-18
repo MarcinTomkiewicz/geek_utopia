@@ -4,8 +4,8 @@ import { ShowArticles } from "../ShowArticles/ShowArticles"
 export const Home = () => {
   return (
     <div className="articles__content--wrapper">
-      <ContentCarousel type="news"></ContentCarousel>
-      <ShowArticles type="news" startFrom={6} howMany={10} />
+      <ContentCarousel articleType="news"></ContentCarousel>
+      <ShowArticles articleType="news" startFrom={6} howMany={10} />
     </div>
   );
 };

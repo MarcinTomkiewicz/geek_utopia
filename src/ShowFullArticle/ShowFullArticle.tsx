@@ -2,15 +2,11 @@ import { FirebaseApp } from "firebase/app";
 import { doc, DocumentData, Firestore, FirestoreDataConverter, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Badge } from "react-bootstrap";
+import { Tags } from "../atoms/Tags/Tags";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
-import { ArticleParameters, Months } from "../utils/interfaces";
+import { ArticleParameters, ArticleType, Months } from "../utils/interfaces";
 import { badgeBackground, monthLabels } from "../utils/utilsObjects";
-
-interface FullArticleProps {
-  type: string;
-  id: number;
-}
 
 let dateToShow: string;
 
@@ -23,15 +19,18 @@ const generateDate = (article: ArticleParameters): string => {
   return dateToShow;
 };
 
-export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
+export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
   const [articleForRating, setArticleForRating] = useState<DocumentData>();
   const [averageRating, setAverageRatingFromSnapshot] = useState<number>(0);
 
-  const articles = useGetArticles(type);
+  const articles = useGetArticles(articleType);
   const currentArticle = articles[articles.findIndex((article: ArticleParameters) => article.id === id)];
 
   useEffect(() => {
-    const averageRatingOnSnapshot = onSnapshot(doc(db, "content", type), (doc) => {
+    if (!articleType) {
+      return
+    }
+    const averageRatingOnSnapshot = onSnapshot(doc(db, "content", articleType), (doc) => {
       setArticleForRating(doc.data());	  
     });
   }, []);
@@ -42,7 +41,7 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
       if (articleForRating === undefined) {
         return;
       }
-      const ratings = articleForRating[`${type}_id_${id}`].rating;
+      const ratings = articleForRating[`${articleType}_id_${id}`].rating;
       const averageRatings = ratings.reduce((partialSum: number, a: number) => partialSum + a, 0) / ratings.length;
       return setAverageRatingFromSnapshot(averageRatings);
     };
@@ -52,9 +51,12 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
   const partOfStarSelected = (averageRating - Math.floor(averageRating)) * 100;
 
   const handleChangeStarRating = async (e: any) => {
-    const articleName = `${type}_id_${id}`;
+    if (!articleType) {
+      return;
+    }
+    const articleName = `${articleType}_id_${id}`;
     currentArticle.rating.push(parseInt(e.target.id));
-    await updateDoc(doc(db, "content", type), {
+    await updateDoc(doc(db, "content", articleType), {
       [articleName]: {
         ...currentArticle,
         rating: currentArticle.rating,
@@ -68,7 +70,7 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
         if (article.id === id) {
           return (
             <>
-              <div className="mt-4 px-4 pb-3 d-flex flex-column w-100 align-items-center">
+              <div className="mt-4 px-4 pb-3 d-flex flex-column w-100 align-items-center" key={article?.id}>
                 <img
                   src={article.picture}
                   alt={article.title}
@@ -84,29 +86,7 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
                   </div>
                 </div>
                 <h1 className="mb-4">{article.title}</h1>
-                <div className="d-flex flex-row justify-content-start gap-2 align-items-center mt-1 mb-3 flex-wrap w-100">
-										{article?.tags[0] !== ""
-											? article?.tags.map((tag) => {
-													if (tag === "") {
-														return;
-													}
-													return (
-														<Badge
-															bg={
-																badgeBackground[
-																	Math.floor(
-																		Math.random() *
-																			badgeBackground.length
-																	)
-																]
-															}
-														>
-															{tag}
-														</Badge>
-													);
-											  })
-											: "Nie ma żadnych tagów do tego artykułu"}
-									</div>
+                <Tags article={article} />
                 <div className="mb-4 text-left w-100" style={{fontWeight: "bold"}}>{article.short_descr}</div>
                 {article.content.split("\n").map((paragraph: string) => {
                   return (

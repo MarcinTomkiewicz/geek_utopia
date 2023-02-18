@@ -24,10 +24,10 @@ export const MainContent = () => {
           <LeftPanel />
         </div>
         <div className="side__content">
-        <ArticlesTab type="news" />  
+        <ArticlesTab articleType="news" />  
         </div>
         <div className="side__content">
-        <ArticlesTab type="articles"/>
+        <ArticlesTab articleType="articles"/>
         </div>
       </aside>
       <div className="articles__content d-flex flex-column justify-content-start align-items-center w-75 pb-5">
@@ -37,10 +37,10 @@ export const MainContent = () => {
           <Route path="/news" element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} />} />
           {user?.is_admin ? <Route path="/admin/*" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
           {news.map((newsItem: ArticleParameters) => {
-            return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle type="news" id={newsItem?.id} />} />;
+            return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle articleType="news" id={newsItem?.id} />} />;
           })}
           {articles.map((article: ArticleParameters) => {
-            return <Route path={`/news/${article.id}`} key={article.id} element={<ShowFullArticle type="articles" id={article?.id} />} />;
+            return <Route path={`/news/${article.id}`} key={article.id} element={<ShowFullArticle articleType="articles" id={article?.id} />} />;
           })}
         </Routes>
       </div>

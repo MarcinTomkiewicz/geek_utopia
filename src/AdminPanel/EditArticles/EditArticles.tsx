@@ -11,20 +11,13 @@ import { Modal } from "react-bootstrap";
 import { db } from "../../config/firebaseConfig";
 import { useGetArticles } from "../../hooks/useGetArticles";
 import ReactPaginate from "react-paginate";
-import { ArticleParameters } from "../../utils/interfaces";
-
-interface EditArticleType {
-	articleType?: string;
-}
+import { ArticleParameters, ArticleType, Months } from "../../utils/interfaces";
+import { monthLabels } from "../../utils/utilsObjects";
+import { Tags } from "../../atoms/Tags/Tags";
 
 let dateToShow: string;
 
-interface Months {
-	key: number;
-	value: string;
-}
-
-export const EditArticles = ({ articleType }: EditArticleType) => {
+export const EditArticles = ({ articleType }: ArticleType) => {
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [modal, setModal] = useState<ArticleParameters>();
 	const articles = useGetArticles(articleType);
@@ -39,21 +32,6 @@ export const EditArticles = ({ articleType }: EditArticleType) => {
 	const paginate = ({ selected }: any) => {
 		setCurrentPage(selected + 1);
 	};
-
-	const monthLabels = [
-		{ key: 1, value: "stycznia" },
-		{ key: 2, value: "lutego" },
-		{ key: 3, value: "marca" },
-		{ key: 4, value: "kwietnia" },
-		{ key: 5, value: "maja" },
-		{ key: 6, value: "czerwca" },
-		{ key: 7, value: "lipca" },
-		{ key: 8, value: "sierpnia" },
-		{ key: 9, value: "września" },
-		{ key: 10, value: "października" },
-		{ key: 11, value: "listopada" },
-		{ key: 12, value: "grudnia" },
-	];
 
 	const generateDate = (article: ArticleParameters): string => {
 		monthLabels.forEach((month: Months) => {
@@ -128,7 +106,7 @@ export const EditArticles = ({ articleType }: EditArticleType) => {
 										width: "20%",
 									}}
 								>
-									<div>{article.title}</div>
+									<div style={{fontWeight: "bold"}}>{article.title}</div>
 								</div>
 								<div
 									className="d-flex px-2 pt-2 align-items-center justify-content-start text-left"
@@ -227,6 +205,7 @@ export const EditArticles = ({ articleType }: EditArticleType) => {
 								Autor: {modal?.author}
 							</div>
 						</div>
+						<Tags article={modal} />
 						<h1 className="mb-4">{modal?.title}</h1>
 						<div
 							className="mb-4 text-left w-100"

@@ -1,20 +1,22 @@
 import { doc, DocumentData, onSnapshot } from "firebase/firestore";
 import { Badge, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { ArticleParameters } from "../utils/interfaces";
+import { ArticleParameters, Months } from "../utils/interfaces";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
 import { useEffect, useState } from "react";
+import { monthLabels } from "../utils/utilsObjects";
+import { Tags } from "../atoms/Tags/Tags";
 
-export const ArticlesTab = ({ type }: any): JSX.Element | null => {
+export const ArticlesTab = ({ articleType }: any): JSX.Element | null => {
 
   const [articleForRating, setArticleForRating] = useState<DocumentData>();
   const [averageRating, setAverageRatingFromSnapshot] = useState<number>(0);
 
   useEffect(() => {
-    const averageRatingOnSnapshot = onSnapshot(doc(db, "content", type), (doc) => {
+    const averageRatingOnSnapshot = onSnapshot(doc(db, "content", articleType), (doc) => {
       setArticleForRating(doc.data());
     });
   }, []);
@@ -24,7 +26,7 @@ export const ArticlesTab = ({ type }: any): JSX.Element | null => {
     if (articleForRating === undefined) {
       return 0;
     }
-    const ratings = articleForRating[`${type}_id_${article.id}`]?.rating;
+    const ratings = articleForRating[`${articleType}_id_${article.id}`]?.rating;
     rating = ratings?.reduce((partialSum: number, a: number) => partialSum + a, 0) / ratings?.length;
     if (isNaN(rating)) {
         return 0;
@@ -37,7 +39,7 @@ export const ArticlesTab = ({ type }: any): JSX.Element | null => {
   const language = useLanguagePacks();
   const langCode = useLanguageSettings();
 
-  const articles = useGetArticles(type);
+  const articles = useGetArticles(articleType);
   const articlesToShowOnList = articles.slice(0, 10);
 
   if (articles === undefined) {
@@ -45,26 +47,6 @@ export const ArticlesTab = ({ type }: any): JSX.Element | null => {
   }
 
   let dateToShow: string;
-
-  interface Months {
-    key: number;
-    value: string;
-  }
-
-  const monthLabels = [
-    { key: 1, value: "stycznia" },
-    { key: 2, value: "lutego" },
-    { key: 3, value: "marca" },
-    { key: 4, value: "kwietnia" },
-    { key: 5, value: "maja" },
-    { key: 6, value: "czerwca" },
-    { key: 7, value: "lipca" },
-    { key: 8, value: "sierpnia" },
-    { key: 9, value: "września" },
-    { key: 10, value: "października" },
-    { key: 11, value: "listopada" },
-    { key: 12, value: "grudnia" },
-  ];
 
   const generateDate = (article: ArticleParameters): string => {
     monthLabels.forEach((month: Months) => {
@@ -77,9 +59,9 @@ export const ArticlesTab = ({ type }: any): JSX.Element | null => {
 
   return (
     <div className="aside__content">
-      <h2 className="text-center">{language.headers?.[type][langCode]}</h2>
+      <h2 className="text-center">{language.headers?.[articleType][langCode]}</h2>
       {articlesToShowOnList.map((article: ArticleParameters) => {
-        const linkToNavigate = `/${type}/${article.id}`;
+        const linkToNavigate = `/${articleType}/${article.id}`;
         return (
           <div key={article.id} className="d-flex flex-column gap-2 w-100">
             <Link to={linkToNavigate} className="general__text" style={{ cursor: "pointer", width: "100%" }}>
@@ -102,6 +84,7 @@ export const ArticlesTab = ({ type }: any): JSX.Element | null => {
                       ""
                     )}
                   </div>
+                  <Tags article={article} variant={"small"}/>
                   <div className="d-flex justify-content-evenly align-items-center flex-row w-100 mb-3">
                     <div className="d-flex justify-content-between align-items-center flex-row mt-1 grow-1 w-100" style={{ overflow: "auto" }}>
                       <div style={{ fontSize: "10px"}}>{generateDate(article)}</div>
