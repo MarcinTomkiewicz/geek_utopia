@@ -1,7 +1,7 @@
 import { doc, DocumentData, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { db } from "../config/firebaseConfig";
+import { ArticleParameters } from "../utils/interfaces";
 
 export const useSnapshotArticles = (type: string | undefined): any => {
   const [snapshotArticles, setSnapshotArticles] = useState<DocumentData>();

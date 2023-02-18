@@ -1,9 +1,11 @@
 import { FirebaseApp } from "firebase/app";
 import { doc, DocumentData, Firestore, FirestoreDataConverter, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
+import { Badge } from "react-bootstrap";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
+import { ArticleParameters, Months } from "../utils/interfaces";
+import { badgeBackground, monthLabels } from "../utils/utilsObjects";
 
 interface FullArticleProps {
   type: string;
@@ -11,26 +13,6 @@ interface FullArticleProps {
 }
 
 let dateToShow: string;
-
-interface Months {
-  key: number;
-  value: string;
-}
-
-const monthLabels = [
-  { key: 1, value: "stycznia" },
-  { key: 2, value: "lutego" },
-  { key: 3, value: "marca" },
-  { key: 4, value: "kwietnia" },
-  { key: 5, value: "maja" },
-  { key: 6, value: "czerwca" },
-  { key: 7, value: "lipca" },
-  { key: 8, value: "sierpnia" },
-  { key: 9, value: "września" },
-  { key: 10, value: "października" },
-  { key: 11, value: "listopada" },
-  { key: 12, value: "grudnia" },
-];
 
 const generateDate = (article: ArticleParameters): string => {
   monthLabels.forEach((month: Months) => {
@@ -102,6 +84,29 @@ export const ShowFullArticle = ({ type, id }: FullArticleProps) => {
                   </div>
                 </div>
                 <h1 className="mb-4">{article.title}</h1>
+                <div className="d-flex flex-row justify-content-start gap-2 align-items-center mt-1 mb-3 flex-wrap w-100">
+										{article?.tags[0] !== ""
+											? article?.tags.map((tag) => {
+													if (tag === "") {
+														return;
+													}
+													return (
+														<Badge
+															bg={
+																badgeBackground[
+																	Math.floor(
+																		Math.random() *
+																			badgeBackground.length
+																	)
+																]
+															}
+														>
+															{tag}
+														</Badge>
+													);
+											  })
+											: "Nie ma żadnych tagów do tego artykułu"}
+									</div>
                 <div className="mb-4 text-left w-100" style={{fontWeight: "bold"}}>{article.short_descr}</div>
                 {article.content.split("\n").map((paragraph: string) => {
                   return (

@@ -1,8 +1,8 @@
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import { Dispatch, SetStateAction } from "react";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { useUser } from "../hooks/useUser";
+import { ArticleParameters } from "./interfaces";
 
 export interface DispatchTypes {
   nickname?: string;

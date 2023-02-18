@@ -6,11 +6,11 @@ import { Alert, Button, Col, Form, FormCheck, Row } from "react-bootstrap";
 import { TextInput } from "../../utils/TextInput";
 import { useHighestId } from "../../hooks/useHighestId";
 import { getDownloadURL, ref, StorageReference, uploadBytesResumable } from "firebase/storage";
-import { ArticleParameters } from "../AdminPanel";
+import { ArticleParameters } from "../../utils/interfaces";
 
 const currentDate = new Date();
 
-export const AddArticle = (): any => {
+export const AddArticle = (): JSX.Element => {
   const user = useUser();
 
   const [success, setSuccess] = useState<boolean>(false);

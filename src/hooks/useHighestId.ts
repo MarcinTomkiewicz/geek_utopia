@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { ArticleParameters } from "../utils/interfaces";
 import { useGetArticles } from "./useGetArticles";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
 
 export const useHighestId = (category?: string): any => {
   const [highestId, setHighestId] = useState<number>(0);

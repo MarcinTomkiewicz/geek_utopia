@@ -1,9 +1,10 @@
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { useState } from "react";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
+import { ArticleParameters, Months } from "../utils/interfaces";
+import { badgeBackground, monthLabels } from "../utils/utilsObjects";
 
 interface ArticlesPageProps {
 	articleType: string;
@@ -44,26 +45,6 @@ export const ArticlesOnlyPage = ({
 
 	let dateToShow: string;
 
-	interface Months {
-		key: number;
-		value: string;
-	}
-
-	const monthLabels = [
-		{ key: 1, value: "stycznia" },
-		{ key: 2, value: "lutego" },
-		{ key: 3, value: "marca" },
-		{ key: 4, value: "kwietnia" },
-		{ key: 5, value: "maja" },
-		{ key: 6, value: "czerwca" },
-		{ key: 7, value: "lipca" },
-		{ key: 8, value: "sierpnia" },
-		{ key: 9, value: "września" },
-		{ key: 10, value: "października" },
-		{ key: 11, value: "listopada" },
-		{ key: 12, value: "grudnia" },
-	];
-
 	const generateDate = (article: ArticleParameters): string => {
 		monthLabels.forEach((month: Months) => {
 			if (article?.date.toDate().getMonth() + 1 === month.key) {
@@ -77,16 +58,6 @@ export const ArticlesOnlyPage = ({
 		});
 		return dateToShow;
 	};
-
-	const badgeBackground = [
-		"primary",
-		"secondary",
-		"success",
-		"danger",
-		"warning",
-		"info",
-		"dark",
-	];
 
 	return (
 		<>

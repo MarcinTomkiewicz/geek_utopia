@@ -1,13 +1,12 @@
 import { doc, DocumentData, onSnapshot } from "firebase/firestore";
 import { Badge, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
+import { ArticleParameters } from "../utils/interfaces";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
 import { useEffect, useState } from "react";
-import { useSnapshotArticles } from "../hooks/useSnapshotArticles";
 
 export const ArticlesTab = ({ type }: any): JSX.Element | null => {
 

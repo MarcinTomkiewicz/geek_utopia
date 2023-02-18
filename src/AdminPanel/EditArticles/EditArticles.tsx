@@ -6,13 +6,12 @@ import {
 	onSnapshot,
 	updateDoc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { Badge, Modal } from "react-bootstrap";
+import { useState } from "react";
+import { Modal } from "react-bootstrap";
 import { db } from "../../config/firebaseConfig";
 import { useGetArticles } from "../../hooks/useGetArticles";
-import { useSnapshotArticles } from "../../hooks/useSnapshotArticles";
-import { ArticleParameters } from "../AdminPanel";
 import ReactPaginate from "react-paginate";
+import { ArticleParameters } from "../../utils/interfaces";
 
 interface EditArticleType {
 	articleType?: string;

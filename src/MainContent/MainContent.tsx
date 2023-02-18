@@ -4,10 +4,11 @@ import { Home } from "../Home/Home";
 import { About } from "../About/About";
 import { ArticlesTab } from "../ArticlesTab/ArticlesTab";
 import { useUser } from "../hooks/useUser";
-import { AdminPanel, ArticleParameters } from "../AdminPanel/AdminPanel";
+import { AdminPanel } from "../AdminPanel/AdminPanel";
 import { ArticlesOnlyPage } from "../ArticlesOnlyPage/ArticlesOnlyPage";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { ShowFullArticle } from "../ShowFullArticle/ShowFullArticle";
+import { ArticleParameters } from "../utils/interfaces";
 
 export const MainContent = () => {
   let location = useLocation();

@@ -1,7 +1,8 @@
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { useGetArticles } from "../hooks/useGetArticles";
+import { ArticleParameters, Months } from "../utils/interfaces";
+import { monthLabels } from "../utils/utilsObjects";
 
 interface ArticlesProps {
   type: string;
@@ -18,26 +19,6 @@ export const ShowArticles = ({ type, startFrom, howMany }: ArticlesProps): JSX.E
   }
 
   let dateToShow: string;
-
-  interface Months {
-    key: number;
-    value: string;
-  }
-
-  const monthLabels = [
-    { key: 1, value: "stycznia" },
-    { key: 2, value: "lutego" },
-    { key: 3, value: "marca" },
-    { key: 4, value: "kwietnia" },
-    { key: 5, value: "maja" },
-    { key: 6, value: "czerwca" },
-    { key: 7, value: "lipca" },
-    { key: 8, value: "sierpnia" },
-    { key: 9, value: "września" },
-    { key: 10, value: "października" },
-    { key: 11, value: "listopada" },
-    { key: 12, value: "grudnia" },
-  ];
 
   const generateDate = (article: ArticleParameters): string => {
     monthLabels.forEach((month: Months) => {

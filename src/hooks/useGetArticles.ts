@@ -8,7 +8,7 @@ import {
 	DocumentSnapshot,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
+import { ArticleParameters } from "../utils/interfaces";
 
 export const useGetArticles = (category?: string): any => {
 	const [allCategories, setAllCategories] = useState<any[]>([]);

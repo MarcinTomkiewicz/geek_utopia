@@ -1,10 +1,10 @@
 import { CSSProperties } from "react";
 import { Carousel } from "react-responsive-carousel";
 import { useGetArticles } from "../hooks/useGetArticles";
-import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { ArticleParameters } from "../utils/interfaces";
 
 interface CarouselProps {
   type?: string;
