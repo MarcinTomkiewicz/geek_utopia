@@ -1,10 +1,9 @@
 import { ArticleParameters } from "../AdminPanel/AdminPanel";
 import { useGetArticles } from "../hooks/useGetArticles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-import { log } from "console";
 
 interface ArticlesPageProps {
 	articleType: string;
@@ -29,6 +28,14 @@ export const ArticlesOnlyPage = ({articleType, defaultPostsOnPage}: ArticlesPage
 	if (news === undefined) {
 		return null;
 	}
+
+	const handlePostsOnPageChange = (e: any) => {
+		setPostsPerPage(e.target.value);
+		if (currentNews.length === 0) {
+			setCurrentPage(1);
+		}
+	}
+
 
 	let dateToShow: string;
 
@@ -65,13 +72,6 @@ export const ArticlesOnlyPage = ({articleType, defaultPostsOnPage}: ArticlesPage
 		});
 		return dateToShow;
 	};
-
-	const handlePostsOnPageChange = (e: any) => {
-		setPostsPerPage(e.target.value);
-		if (currentNews.length === 0) {
-			setCurrentPage(1);
-		}
-	}
 
 	return (
 		<>
