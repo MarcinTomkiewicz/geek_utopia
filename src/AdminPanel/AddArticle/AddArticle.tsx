@@ -28,7 +28,7 @@ export const AddArticle = (): JSX.Element => {
     date: Timestamp.fromDate(currentDate),
     picture: "",
     rating: [],
-    tags: [""],
+    tags: [],
     short_descr: "",
     isOnline: false,
     isAdult: false,
@@ -100,8 +100,6 @@ export const AddArticle = (): JSX.Element => {
     });
   };
 
-  console.log(data);
-
   const handleSwitch = (e: ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.checked });
   };
@@ -116,34 +114,32 @@ export const AddArticle = (): JSX.Element => {
     }
   }; 
 
-  console.log(data);
-  
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
       alert("Please upload an image first!");
       return;
     }
+    data.tags = data.tags.toString().split("\n");
     console.log(data.tags);
     
-    
-    // handleUpload();
-    // if (data.databaseTitle !== "" && data.picture !== "") {
-    //   try {
-    //       addArticle(data)
-    //       setSuccess(true);
-    //       resetForm();
-    //     }
-    //     catch(err: unknown) {
-    //       console.log(err);
-    //       setFormError((prev) => !prev);
-    //       if (err instanceof Error) {
-    //         setError(err.message);
-    //       }
-    //       console.log(error);
-    //     };
-    // }
+
+    handleUpload();
+    if (data.databaseTitle !== "" && data.picture !== "") {
+      try {
+          addArticle(data)
+          setSuccess(true);
+          resetForm();
+        }
+        catch(err: unknown) {
+          console.log(err);
+          setFormError((prev) => !prev);
+          if (err instanceof Error) {
+            setError(err.message);
+          }
+          console.log(error);
+        };
+    }
   };
 
   return (

@@ -9,18 +9,9 @@ export const TextInput = ({ input, isRequired, type, name, data, setData, textar
   
   const [tags, setTags] = useState<string[]>([])
 
-  const convertTagsToArray = (tagFromForm: string): void => {
-    if (tagFromForm.includes('\n')) {
-      return data.tags.push(tagFromForm.substring(0, tagFromForm.length-3))
-    }
-  }
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (name === "tags") {
-      // const tags = e.target.value;
-      // setTags(data.tags.push(e.target.value.split("\n")))
-      convertTagsToArray(e.target.value)
-      setData({ ...data, [name]: tags });
+      setData({ ...data, [name]: e.target.value });
     }
     else {
     setData({ ...data, [name]: e.target.value });
