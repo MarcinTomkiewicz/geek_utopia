@@ -67,7 +67,7 @@ export const ArticlesOnlyPage = ({
 					className="d-flex justify-content-between align-items-center flex-column w-100 mb-3 p-2 article__list no--opacity"
 					key={articles[0]?.id}
 				>
-					<div className="d-flex justify-content-center w-100">
+					<div className="articles__image--container w-50 align-self-center">
 						<Link
 							to={`/news/${articles[0]?.id}`}
 							className="general__text"
@@ -76,7 +76,8 @@ export const ArticlesOnlyPage = ({
 							<img
 								src={articles[0]?.picture}
 								alt={articles[0]?.title}
-								style={{ borderRadius: "10px", width: "100%" }}
+								className="articles__image"
+								style={{ borderRadius: "10px", maxHeight: "250px", border: "1px solid white" }}
 							/>
 						</Link>
 					</div>

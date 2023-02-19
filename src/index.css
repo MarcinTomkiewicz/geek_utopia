@@ -58,12 +58,13 @@ h3 {
 h4 {
   display: block;
   font-size: 1rem!important;
-  margin-bottom: 0.5rem!important;
+  margin-bottom: 0rem!important;
 }
 
 h5 {
   display: block;
   font-size: .83rem!important;
+  margin: 0!important;
 }
 
 h6 {

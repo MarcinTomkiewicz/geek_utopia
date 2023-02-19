@@ -83,6 +83,7 @@ export const ArticlesTab = ({
 											src={article?.picture}
 											alt={article?.title}
 											className="articles__image"
+                      style={{maxHeight: "125px"}}
 										/>
 									</div>
 									<div className="d-flex align-items-center flex-row w-100 mt-2">
@@ -90,14 +91,14 @@ export const ArticlesTab = ({
 											{article?.title}{" "}
 										</h4>
 										{article.is_adult ? (
-											<h5
-												className="mx-2 align-middle"
+											<h6
+												className="mx-2"
 												style={{
 													marginBottom: "0",
 												}}
 											>
 												<Badge bg="danger">18+</Badge>
-											</h5>
+											</h6>
 										) : (
 											""
 										)}
