@@ -1,26 +1,36 @@
 import { useGetArticles } from "../hooks/useGetArticles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-import { ArticleParameters, Months } from "../utils/interfaces";
-import { badgeBackground, monthLabels } from "../utils/utilsObjects";
+import { ArticleParameters, ArticleType } from "../utils/interfaces";
 import { Tags } from "../atoms/Tags/Tags";
-
-interface ArticlesPageProps {
-	articleType: string;
-	defaultPostsOnPage: number;
-}
+import { generateDate } from "../utils/generateDate";
 
 export const ArticlesOnlyPage = ({
 	articleType,
 	defaultPostsOnPage,
-}: ArticlesPageProps): any => {
-	const news = useGetArticles(articleType);
-	const newsExceptOfFirst = news.slice(1);
+	currentTag
+}: ArticleType): any => {
+
+	const [filteredTag, setFilteredTag] = useState<string>(currentTag ? currentTag : "");
+
+	const articles = useGetArticles(articleType).filter(
+		(article: ArticleParameters) => article.is_online
+	).filter((article: ArticleParameters) => {
+		if (filteredTag) {
+			return article?.tags.includes(filteredTag)
+		}
+		else {
+			return true;
+		}
+	});
+	const newsExceptOfFirst = articles.slice(1);
 
 	const [currentPage, setCurrentPage] = useState(1);
-	const [postsPerPage, setPostsPerPage] = useState(defaultPostsOnPage);
+	const [postsPerPage, setPostsPerPage] = useState(
+		defaultPostsOnPage ? defaultPostsOnPage : 10
+	);
 
 	const indexOfLastNews = currentPage * postsPerPage;
 	const indexOfFirstNews = indexOfLastNews - postsPerPage;
@@ -33,7 +43,7 @@ export const ArticlesOnlyPage = ({
 		setCurrentPage(selected + 1);
 	};
 
-	if (news === undefined) {
+	if (articles === undefined) {
 		return null;
 	}
 
@@ -44,54 +54,43 @@ export const ArticlesOnlyPage = ({
 		}
 	};
 
-	let dateToShow: string;
-
-	const generateDate = (article: ArticleParameters): string => {
-		monthLabels.forEach((month: Months) => {
-			if (article?.date.toDate().getMonth() + 1 === month.key) {
-				return (dateToShow =
-					article?.date.toDate().getDate() +
-					" " +
-					month.value +
-					" " +
-					article?.date.toDate().getFullYear());
-			}
-		});
-		return dateToShow;
-	};
+	const removeFilters = () => {
+		setFilteredTag('')
+	}
 
 	return (
 		<>
-			<h1 className="py-3">Newsy</h1>
+			<h1 className={filteredTag ? "pt-3" : "py-3"}>Newsy {filteredTag ? `z tagiem: ${filteredTag}` : ""}</h1>
+			{filteredTag ? <button className="logon pb-3" onClick={removeFilters}>Usuń tagi</button> : ''}
 			<div className="d-flex flex-column gap-2 w-100">
 				<div
 					className="d-flex justify-content-between align-items-center flex-column w-100 mb-3 p-2 article__list no--opacity"
-					key={news[0]?.id}
+					key={articles[0]?.id}
 				>
 					<div className="d-flex justify-content-center w-100">
 						<Link
-							to={`/news/${news[0]?.id}`}
+							to={`/news/${articles[0]?.id}`}
 							className="general__text"
 							style={{ cursor: "pointer" }}
 						>
 							<img
-								src={news[0]?.picture}
-								alt={news[0]?.title}
+								src={articles[0]?.picture}
+								alt={articles[0]?.title}
 								style={{ borderRadius: "10px", width: "100%" }}
 							/>
 						</Link>
 					</div>
 					<div className="d-flex mt-2 justify-content-start align-items-start flex-column w-100 h-100">
 						<Link
-							to={`/news/${news[0]?.id}`}
+							to={`/news/${articles[0]?.id}`}
 							className="general__text"
 							style={{ cursor: "pointer" }}
 						>
 							<div className="d-flex align-items-center flex-row w-100">
 								<h2 style={{ marginBottom: "0" }}>
-									{news[0]?.title}{" "}
+									{articles[0]?.title}{" "}
 								</h2>
-								{news[0]?.is_adult ? (
+								{articles[0]?.is_adult ? (
 									<h5
 										className="mx-2 align-middle"
 										style={{
@@ -106,21 +105,23 @@ export const ArticlesOnlyPage = ({
 							</div>
 							<div className="d-flex justify-content-between align-items-center flex-row w-100">
 								<div style={{ fontSize: "0.75rem" }}>
-									{generateDate(news[0])}
+									{generateDate(articles[0])}
 								</div>
 							</div>
 						</Link>
-						<Tags article={news[0]} />
+						<Tags article={articles[0]} filteredTag={filteredTag} setFilteredTag={setFilteredTag}/>
 						<div>
-							{news[0]?.short_descr === undefined ||
-							news[0]?.short_descr === ""
-								? news[0]?.content.substring(0, 500)
-								: news[0]?.short_descr}
+							{articles[0]?.short_descr === undefined ||
+							articles[0]?.short_descr === ""
+								? articles[0]?.content.substring(0, 500)
+								: articles[0]?.short_descr}
 							...
 						</div>
 					</div>
 				</div>
 			</div>
+			{newsExceptOfFirst.length > 0 ? (
+				<>
 			<div className="d-flex flex-row justify-content-between align-items-center w-100 mb-3 w-75">
 				<h3>
 					Pozostałe {articleType === "news" ? "newsy" : "artykuły"}
@@ -234,18 +235,20 @@ export const ArticlesOnlyPage = ({
 											</div>
 										</div>
 									</Link>
-									<Tags article={article} />
+									<Tags article={article} filteredTag={filteredTag} setFilteredTag={setFilteredTag}/>
 								</div>
 							</div>
 						</div>
 					);
 				})}
 			</div>
-			{Math.ceil(news.length / postsPerPage) > 1 ? (
+			</>
+			) : '' }
+			{Math.ceil(articles.length / postsPerPage) > 1 ? (
 				<div className="pt-2">
 					<ReactPaginate
 						onPageChange={paginate}
-						pageCount={Math.ceil(news.length / postsPerPage)}
+						pageCount={Math.ceil(articles.length / postsPerPage)}
 						previousLabel={"Prev"}
 						nextLabel={"Next"}
 						containerClassName={"pagination"}

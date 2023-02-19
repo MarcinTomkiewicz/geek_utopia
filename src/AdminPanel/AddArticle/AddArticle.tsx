@@ -41,6 +41,7 @@ export const AddArticle = (): JSX.Element => {
   const [data, setData] = useState<ArticleParameters>(parameters);
   const [articleDatabaseName, setArticleDatabaseName] = useState<string>(`${data.category}_id_${data.id}`);
   const [obj, setObj] = useState<any>({});
+  const [hashtags, setTags] = useState<string[]>([])
 
   useEffect(() => {
     if (parameters.id > 1) {
@@ -99,6 +100,8 @@ export const AddArticle = (): JSX.Element => {
     });
   };
 
+  console.log(data);
+
   const handleSwitch = (e: ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.checked });
   };
@@ -113,26 +116,34 @@ export const AddArticle = (): JSX.Element => {
     }
   }; 
 
+  console.log(data);
+  
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
       alert("Please upload an image first!");
       return;
     }
-    handleUpload();
-    if (data.databaseTitle !== "" && data.picture !== "") {
-      addArticle(data)
-        .then(() => {
-          setSuccess(true);
-          resetForm();
-        })
-        .catch((err) => {
-          console.log(err);
-          setFormError((prev) => !prev);
-          setError(err);
-          console.log("Shit");
-        });
-    }
+    console.log(data.tags);
+    
+    
+    // handleUpload();
+    // if (data.databaseTitle !== "" && data.picture !== "") {
+    //   try {
+    //       addArticle(data)
+    //       setSuccess(true);
+    //       resetForm();
+    //     }
+    //     catch(err: unknown) {
+    //       console.log(err);
+    //       setFormError((prev) => !prev);
+    //       if (err instanceof Error) {
+    //         setError(err.message);
+    //       }
+    //       console.log(error);
+    //     };
+    // }
   };
 
   return (
@@ -177,39 +188,14 @@ export const AddArticle = (): JSX.Element => {
           {file ? <img src={displayFile} style={{maxHeight: "200px"}}></img> : ''}
           </div>
           <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-          className="pb-3">
+         className="d-flex flex-row justify-content-between align-items-center gap-5">
           <TextInput input="Data dodania" isRequired="true" disabled type="text" name="date" data={data} setData={setData} />
+          <TextInput input="Tagi" isRequired="true" type="text" name="tags" data={data} setData={setData} textarea height={100}/>
           <TextInput input="ID Newsa" isRequired="true" disabled type="number" name="id" data={data} setData={setData} />
         </div>
-        {/* <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}>
-            <TextInput input="Tagi" isRequired="true" type="text" name="tags" data={data} setData={setData} textarea height={200} />
-          </div> */}
         <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}>
+          className="d-flex flex-row justify-content-between align-items-center gap-5">
+          <div className="d-flex flex-column justify-content-between align-items-start w-100">
             <Form.Check type="switch" label="Opublikować?" id="isOnline" name="isOnline" onChange={handleSwitch} className="me-3"></Form.Check>
             <Form.Check type="switch" label="Tylko dla dorosłych?" id="isAdult" name="isAdult" onChange={handleSwitch} className="mb-3 me-3"></Form.Check>
           </div>

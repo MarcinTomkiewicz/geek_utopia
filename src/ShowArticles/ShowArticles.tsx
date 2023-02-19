@@ -2,27 +2,16 @@ import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Tags } from "../atoms/Tags/Tags";
 import { useGetArticles } from "../hooks/useGetArticles";
-import { ArticleParameters, ArticleType, Months } from "../utils/interfaces";
-import { monthLabels } from "../utils/utilsObjects";
+import { generateDate } from "../utils/generateDate";
+import { ArticleParameters, ArticleType } from "../utils/interfaces";
 
 export const ShowArticles = ({ articleType, startFrom, howMany }: ArticleType): JSX.Element | null => {
-  const articles = useGetArticles(articleType);
-  const articlesToShowOnList = articles.slice(startFrom, howMany).filter((article: ArticleParameters) => article.is_online);
+  const articles = useGetArticles(articleType).filter((article: ArticleParameters) => article.is_online);
+  const articlesToShowOnList = articles.slice(startFrom, howMany);
 
   if (articles === undefined) {
     return null;
   }
-
-  let dateToShow: string;
-
-  const generateDate = (article: ArticleParameters): string => {
-    monthLabels.forEach((month: Months) => {
-      if (article?.date.toDate().getMonth() + 1 === month.key) {
-        return (dateToShow = article?.date.toDate().getDate() + " " + month.value + " " + article?.date.toDate().getFullYear());
-      }
-    });
-    return dateToShow;
-  };
 
   return (
     <>

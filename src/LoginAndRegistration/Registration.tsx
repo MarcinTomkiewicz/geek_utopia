@@ -5,9 +5,10 @@ import { getAuth, createUserWithEmailAndPassword } from "@firebase/auth";
 import { useUser } from "../hooks/useUser";
 import { Logout } from "./Logout";
 import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { DispatchTypes, TextInput } from "../utils/TextInput";
+import { TextInput } from "../utils/TextInput";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
+import { DispatchTypes } from "../utils/interfaces";
 
 const initialValues: DispatchTypes = {
   nickname: "",

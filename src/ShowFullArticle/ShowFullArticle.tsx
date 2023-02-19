@@ -5,19 +5,9 @@ import { Badge } from "react-bootstrap";
 import { Tags } from "../atoms/Tags/Tags";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
+import { generateDate } from "../utils/generateDate";
 import { ArticleParameters, ArticleType, Months } from "../utils/interfaces";
 import { badgeBackground, monthLabels } from "../utils/utilsObjects";
-
-let dateToShow: string;
-
-const generateDate = (article: ArticleParameters): string => {
-  monthLabels.forEach((month: Months) => {
-    if (article?.date.toDate().getMonth() + 1 === month.key) {
-      return (dateToShow = article?.date.toDate().getDate() + " " + month.value + " " + article?.date.toDate().getFullYear());
-    }
-  });
-  return dateToShow;
-};
 
 export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
   const [articleForRating, setArticleForRating] = useState<DocumentData>();

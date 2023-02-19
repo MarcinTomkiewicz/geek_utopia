@@ -30,7 +30,7 @@ export const MainContent = () => {
         <ArticlesTab articleType="articles"/>
         </div>
       </aside>
-      <div className="articles__content d-flex flex-column justify-content-start align-items-center w-75 pb-5">
+      <div className="articles__content d-flex flex-column justify-content-start align-items-center w-75 pb-2 mb-3">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

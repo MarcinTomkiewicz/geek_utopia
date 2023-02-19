@@ -12,10 +12,8 @@ import { db } from "../../config/firebaseConfig";
 import { useGetArticles } from "../../hooks/useGetArticles";
 import ReactPaginate from "react-paginate";
 import { ArticleParameters, ArticleType, Months } from "../../utils/interfaces";
-import { monthLabels } from "../../utils/utilsObjects";
 import { Tags } from "../../atoms/Tags/Tags";
-
-let dateToShow: string;
+import { generateDate } from "../../utils/generateDate";
 
 export const EditArticles = ({ articleType }: ArticleType) => {
 	const [showModal, setShowModal] = useState<boolean>(false);
@@ -31,20 +29,6 @@ export const EditArticles = ({ articleType }: ArticleType) => {
 
 	const paginate = ({ selected }: any) => {
 		setCurrentPage(selected + 1);
-	};
-
-	const generateDate = (article: ArticleParameters): string => {
-		monthLabels.forEach((month: Months) => {
-			if (article?.date.toDate().getMonth() + 1 === month.key) {
-				return (dateToShow =
-					article?.date.toDate().getDate() +
-					" " +
-					month.value +
-					" " +
-					article?.date.toDate().getFullYear());
-			}
-		});
-		return dateToShow;
 	};
 
 	const deleteItem = async (e: any) => {
