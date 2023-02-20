@@ -7,6 +7,7 @@ export interface TagsProps {
 	variant?: "small" | "normal" | undefined;
   filteredTag?: any;
   setFilteredTag?: Dispatch<SetStateAction<string>> | any;
+  isFromOnlyPageComponent?: boolean;
 }
 
 export interface ArticleType {
@@ -24,6 +25,12 @@ export interface DispatchTypes {
   email: string;
   password: string;
   error?: string;
+}
+
+export interface AddArticleProps {
+	isNewArticle: boolean,
+	articleType: string,
+	articleToAdd?: ArticleParameters
 }
 
 //DATA INTERFACES

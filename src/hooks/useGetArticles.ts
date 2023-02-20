@@ -9,26 +9,14 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ArticleParameters } from "../utils/interfaces";
+import { useGetCategories } from "./useGetCategories";
 
 export const useGetArticles = (category?: string): any => {
-	const [allCategories, setAllCategories] = useState<any[]>([]);
 	const [articlesList, setArticlesList] = useState<any>({});
+	const allCategories = useGetCategories();
 
 	useEffect(() => {
-		const getCategory = async () => {
-			const collectDataFromDB = query(collection(db, "content"));
-			const dataFromDB: any[] = [];
-			const documents = await getDocs(collectDataFromDB);
-			documents.docs.map((document) => {
-				dataFromDB.push(document.id);
-			});
-			setAllCategories(dataFromDB);
-		};
-		getCategory();
-	}, []);
-
-	useEffect(() => {
-		allCategories.map((currentCategory) => {
+		allCategories.map((currentCategory: string) => {
 			if (currentCategory === category) {
 				const getArticlesFromDB = async () => {
 					const docRef = doc(db, "content", currentCategory);

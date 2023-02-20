@@ -41,36 +41,36 @@ body {
 
 h1 {
   display: block;
-  font-size: 2rem!important;
+  font-size: 2rem !important;
 }
 
 h2 {
   display: block;
-  font-size: 1.5rem!important;
+  font-size: 1.5rem !important;
 }
 
 h3 {
   display: block;
-  font-size: 1.17rem!important;
-  margin: 0!important;
+  font-size: 1.17rem !important;
+  margin: 0 !important;
 }
 
 h4 {
   display: block;
-  font-size: 1rem!important;
-  margin-bottom: 0rem!important;
+  font-size: 1rem !important;
+  margin-bottom: 0rem !important;
 }
 
 h5 {
   display: block;
-  font-size: .83rem!important;
-  margin: 0!important;
+  font-size: 0.83rem !important;
+  margin: 0 !important;
 }
 
 h6 {
   display: block;
-  font-size: .6rem!important;
-  margin: 0!important;
+  font-size: 0.6rem !important;
+  margin: 0 !important;
 }
 
 main {
@@ -157,6 +157,7 @@ a.page-link.disabled {
   display: flex;
   background-color: #6e3ba8 !important;
   color: #f7fcfc !important;
+  font-size: 12px !important;
 }
 
 input:-webkit-autofill,
@@ -314,15 +315,15 @@ select:-webkit-autofill:focus {
   display: inline-block;
   overflow: hidden;
   font-weight: 400;
-  font-size: 14px!important;
+  font-size: 14px !important;
 }
 
 .btn {
-  font-size: inherit!important;
+  font-size: inherit !important;
 }
 
 .badge {
-  font-size: inherit!important;
+  font-size: inherit !important;
 }
 
 .fancy__text::before {
@@ -552,7 +553,7 @@ select:-webkit-autofill:focus {
   background-color: rgba(108, 67, 184, 0.7);
   border-radius: 10px;
   height: 100%;
-  width: 100%!important;
+  width: 100% !important;
 }
 
 .article__wrap {
@@ -590,7 +591,7 @@ select:-webkit-autofill:focus {
   justify-content: flex-start;
 }
 
-@media screen and (max-width: 800px) { 
+@media screen and (max-width: 800px) {
   form,
   main {
     padding-top: 0;
@@ -608,9 +609,9 @@ select:-webkit-autofill:focus {
     /* justify-content: space-evenly; */
   }
   .btn {
-    font-size: 14px!important;
+    font-size: 14px !important;
   }
-  .logon{
+  .logon {
     flex-grow: 1;
   }
   .articles__content {

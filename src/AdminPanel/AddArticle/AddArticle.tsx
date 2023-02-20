@@ -2,16 +2,18 @@ import { useUser } from "../../hooks/useUser";
 import { db, storage } from "../../config/firebaseConfig";
 import { doc, setDoc, collection, getDocs, addDoc, query, Timestamp, updateDoc } from "firebase/firestore";
 import { ChangeEvent, FormEvent, FormEventHandler, MouseEventHandler, SetStateAction, useEffect, useState } from "react";
-import { Alert, Button, Col, Form, FormCheck, Row } from "react-bootstrap";
+import { Alert, Button, Col, FloatingLabel, Form, FormCheck, Modal, Row } from "react-bootstrap";
 import { TextInput } from "../../utils/TextInput";
-import { useHighestId } from "../../hooks/useHighestId";
 import { getDownloadURL, ref, StorageReference, uploadBytesResumable } from "firebase/storage";
 import { ArticleParameters } from "../../utils/interfaces";
+import { useGetCategories } from "../../hooks/useGetCategories";
+import { useHighestId } from "../../hooks/useHighestId";
 
 const currentDate = new Date();
 
 export const AddArticle = (): JSX.Element => {
   const user = useUser();
+  const categories = useGetCategories();
 
   const [success, setSuccess] = useState<boolean>(false);
   const [formError, setFormError] = useState<boolean>(false);
@@ -41,7 +43,9 @@ export const AddArticle = (): JSX.Element => {
   const [data, setData] = useState<ArticleParameters>(parameters);
   const [articleDatabaseName, setArticleDatabaseName] = useState<string>(`${data.category}_id_${data.id}`);
   const [obj, setObj] = useState<any>({});
-  const [hashtags, setTags] = useState<string[]>([])
+  const [hashtags, setTags] = useState<string[]>([]);
+  const [selectValue, setSelectValue] = useState<any>("");
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (parameters.id > 1) {
@@ -49,15 +53,18 @@ export const AddArticle = (): JSX.Element => {
     } else {
       return;
     }
-  }, [highestIdFromHook]);
+  }, [highestIdFromHook]);  
+
+  console.log(data.category);
+  
 
   // Handle file upload event and update state
   const handleChange = (event: any) => {
     setFile(event.target.files[0]);
-    setDisplayFile(URL.createObjectURL(event.target.files[0]));   
-  }
+    setDisplayFile(URL.createObjectURL(event.target.files[0]));
+  };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     const storageRef = ref(storage, `/files/${data.id}/${file.name}`);
 
     // progress can be paused and resumed. It also exposes progress updates.
@@ -112,35 +119,40 @@ export const AddArticle = (): JSX.Element => {
     if (e?.currentTarget.id === "cancel") {
       setSuccess(false);
     }
-  }; 
+  };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
       alert("Please upload an image first!");
       return;
     }
-    data.tags = data.tags.toString().split("\n");
-    console.log(data.tags);
-    
 
-    handleUpload();
+    await handleUpload();
     if (data.databaseTitle !== "" && data.picture !== "") {
       try {
-          addArticle(data)
-          setSuccess(true);
-          resetForm();
+        const response = await addArticle(data);
+        setSuccess(true);
+        resetForm();
+      } catch (err: unknown) {
+        console.log(err);
+        setFormError((prev) => !prev);
+        if (err instanceof Error) {
+          setError(err.message);
         }
-        catch(err: unknown) {
-          console.log(err);
-          setFormError((prev) => !prev);
-          if (err instanceof Error) {
-            setError(err.message);
-          }
-          console.log(error);
-        };
+        console.log(error);
+      }
     }
   };
+
+  const handleSelectCategory = (e: any) => {
+    setArticleType(e.target.value)
+    setData({...data, category: e.target.value})
+  }
+
+ const capitalizeFirstLetter = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
   return (
     <div className="articles__content--wrapper">
@@ -158,7 +170,7 @@ export const AddArticle = (): JSX.Element => {
       ) : (
         ""
       )}
-      <h1 className="text-center mb-4">Dodaj {articleType}</h1>
+      <h1 className="text-center mb-4">Dodaj {category === "news" ? capitalizeFirstLetter(category) : `artykuł w kategorii: ${capitalizeFirstLetter(category)}`}</h1>
       <Form
         style={{
           width: "80%",
@@ -166,6 +178,16 @@ export const AddArticle = (): JSX.Element => {
           alignItems: "center",
         }}
         onSubmit={handleSubmit}>
+        <div className="d-flex flex-row w-100 justify-content-between gap-3 align-items-center">
+          <FloatingLabel controlId="floatingSelect" label="Wybierz kategorię" className="d-flex flex-grow-1 mb-3">
+            <Form.Select onChange={handleSelectCategory} size="sm" aria-label="Kategoria artykułów" className="form__control--input" defaultValue={selectValue}>
+            {categories?.map((category: string) => {
+              return <option value={category}>{capitalizeFirstLetter(category)}</option>
+            })}
+            </Form.Select>
+          </FloatingLabel>
+          <Button variant="primary" onClick={() => setOpenModal(true)}>Dodaj kategorię artykułów</Button>
+        </div>
         <TextInput input="Tytuł" isRequired="true" type="text" name="title" data={data} setData={setData} />
         <TextInput input="Krótki opis" isRequired="true" type="text" name="short_descr" data={data} setData={setData} textarea height={75} />
         <TextInput input="Treść" isRequired="true" type="text" name="content" data={data} setData={setData} textarea height={200} />
@@ -181,16 +203,14 @@ export const AddArticle = (): JSX.Element => {
             <Form.Label>Dodaj obrazek</Form.Label>
             <Form.Control className="form__control--input" type="file" accept="image/*" onChange={handleChange} />
           </Form.Group>
-          {file ? <img src={displayFile} style={{maxHeight: "200px"}}></img> : ''}
-          </div>
-          <div
-         className="d-flex flex-row justify-content-between align-items-center gap-5">
+          {file ? <img src={displayFile} style={{ maxHeight: "200px" }}></img> : ""}
+        </div>
+        <div className="d-flex flex-row justify-content-between align-items-center gap-5">
           <TextInput input="Data dodania" isRequired="true" disabled type="text" name="date" data={data} setData={setData} />
-          <TextInput input="Tagi" isRequired="true" type="text" name="tags" data={data} setData={setData} textarea height={100}/>
+          <TextInput input="Tagi" isRequired="true" type="text" name="tags" data={data} setData={setData} textarea height={100} />
           <TextInput input="ID Newsa" isRequired="true" disabled type="number" name="id" data={data} setData={setData} />
         </div>
-        <div
-          className="d-flex flex-row justify-content-between align-items-center gap-5">
+        <div className="d-flex flex-row justify-content-between align-items-center gap-5">
           <div className="d-flex flex-column justify-content-between align-items-start w-100">
             <Form.Check type="switch" label="Opublikować?" id="isOnline" name="isOnline" onChange={handleSwitch} className="me-3"></Form.Check>
             <Form.Check type="switch" label="Tylko dla dorosłych?" id="isAdult" name="isAdult" onChange={handleSwitch} className="mb-3 me-3"></Form.Check>
@@ -213,6 +233,30 @@ export const AddArticle = (): JSX.Element => {
           </Button>
         </div>
       </Form>
+      {/* <Modal
+				size="lg"
+				show={() => {return setOpenModal(true)}}
+				onHide={() => setOpenModal(false)}
+				centered
+				style={{
+					display: "flex",
+					alignItems: "center",
+					flexDirection: "column",
+					justifyContent: "flex-start",
+					marginTop: "1.5em",
+				}}
+			>
+				<Modal.Header
+					closeButton
+					closeVariant="white"
+					style={{ backgroundColor: "rgba(161, 14, 184)" }}
+				>
+					<Modal.Title>Dodaj kategorię</Modal.Title>
+				</Modal.Header>
+				<Modal.Body style={{ backgroundColor: "rgba(0, 0, 0)" }}>
+					<TextInput 
+				</Modal.Body>
+			</Modal> */}
     </div>
   );
 };

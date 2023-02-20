@@ -13,7 +13,12 @@ export const ArticlesOnlyPage = ({
 	currentTag
 }: ArticleType): any => {
 
-	const [filteredTag, setFilteredTag] = useState<string>(currentTag ? currentTag : "");
+	const [filteredTag, setFilteredTag] = useState<string | undefined>(currentTag);
+	const [refresh, setRefresh] = useState<string[]>([])
+
+	useEffect(() => {
+		setRefresh([])
+	}, [currentTag])
 
 	const articles = useGetArticles(articleType).filter(
 		(article: ArticleParameters) => article.is_online
@@ -110,7 +115,7 @@ export const ArticlesOnlyPage = ({
 								</div>
 							</div>
 						</Link>
-						<Tags article={articles[0]} filteredTag={filteredTag} setFilteredTag={setFilteredTag}/>
+						<Tags article={articles[0]} filteredTag={filteredTag} setFilteredTag={setFilteredTag} isFromOnlyPageComponent/>
 						<div>
 							{articles[0]?.short_descr === undefined ||
 							articles[0]?.short_descr === ""
@@ -236,7 +241,7 @@ export const ArticlesOnlyPage = ({
 											</div>
 										</div>
 									</Link>
-									<Tags article={article} filteredTag={filteredTag} setFilteredTag={setFilteredTag}/>
+									<Tags article={article} filteredTag={filteredTag} setFilteredTag={setFilteredTag} isFromOnlyPageComponent/>
 								</div>
 							</div>
 						</div>

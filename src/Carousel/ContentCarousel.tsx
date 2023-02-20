@@ -24,9 +24,9 @@ export const ContentCarousel = ({ articleType }: ArticleType): JSX.Element | nul
               <img src={article?.picture} />
               <div className="legend d-flex justify-content-between align-items-start flex-column" style={{ marginTop: "100px" }}>
                 <Link to={`/${articleType}/${article.id}`} className="general__text w-100" style={{ cursor: "pointer" }}>
-                  <div className="d-flex justify-content-between align-items-center w-100 mb-3">
-                    <div className="d-flex align-items-center flex-row w-80">
-                      <h2 style={{ marginBottom: "0" }}>{article?.title} </h2>
+                  <div className="d-flex justify-content-between align-items-center w-100 mb-3 gap-1">
+                    <div className="d-flex justify-content-start flex-row" style={{width: "70%"}}>
+                      <h2 style={{ marginBottom: "0", textAlign: "left" }}>{article?.title} </h2>
                       {article.is_adult ? (
                         <h5
                           className="mx-2 align-middle"
@@ -39,8 +39,8 @@ export const ContentCarousel = ({ articleType }: ArticleType): JSX.Element | nul
                         ""
                       )}
                     </div>
-                    <div className="d-flex justify-content-between align-items-start flex-column mt-1">
-                      <div>Data publikacji: {article.date.toDate().toLocaleString()}</div>
+                    <div className="d-flex justify-content-between align-items-start flex-column mt-1 text-right">
+                      <div className="w-100 text-end">Data publikacji: {article.date.toDate().toLocaleString()}</div>
                       <div className="w-100 text-end">Autor: {article?.author}</div>
                     </div>
                   </div>

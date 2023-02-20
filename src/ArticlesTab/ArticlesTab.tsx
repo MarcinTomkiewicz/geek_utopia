@@ -104,7 +104,7 @@ export const ArticlesTab = ({
 										)}
 									</div>
 								</Link>
-								<Tags article={article} variant={"small"} />
+								<Tags article={article} variant={"small"}/>
 								<Link
 									to={linkToNavigate}
 									className="general__text"

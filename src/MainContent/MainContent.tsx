@@ -9,6 +9,7 @@ import { ArticlesOnlyPage } from "../ArticlesOnlyPage/ArticlesOnlyPage";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { ShowFullArticle } from "../ShowFullArticle/ShowFullArticle";
 import { ArticleParameters } from "../utils/interfaces";
+import { ShowArticles } from "../ShowArticles/ShowArticles";
 
 export const MainContent = () => {
   let location = useLocation();
@@ -34,10 +35,15 @@ export const MainContent = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/news" element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} />} />
+          <Route path="/news/" element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} />} />
           {user?.is_admin ? <Route path="/admin/*" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
           {news.map((newsItem: ArticleParameters) => {
             return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle articleType="news" id={newsItem?.id} />} />;
+          })}
+          {news.map((newsItem: ArticleParameters) => {
+            return newsItem.tags.map((tag: string) => {
+              return <Route path={`/news/${tag}`} key={newsItem.id} element={<ArticlesOnlyPage articleType="news" currentTag={tag} defaultPostsOnPage={20} />} />;
+          })
           })}
           {articles.map((article: ArticleParameters) => {
             return <Route path={`/news/${article.id}`} key={article.id} element={<ShowFullArticle articleType="articles" id={article?.id} />} />;
