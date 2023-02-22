@@ -1,28 +1,48 @@
 import { useUser } from "../../hooks/useUser";
 import { db, storage } from "../../config/firebaseConfig";
-import { doc, setDoc, collection, getDocs, addDoc, query, Timestamp, updateDoc } from "firebase/firestore";
-import { ChangeEvent, FormEvent, FormEventHandler, MouseEventHandler, SetStateAction, useEffect, useState } from "react";
-import { Alert, Button, Col, FloatingLabel, Form, FormCheck, Modal, Row } from "react-bootstrap";
+import { doc, Timestamp, updateDoc } from "firebase/firestore";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
+import { Alert, Button, FloatingLabel, Form, Modal} from "react-bootstrap";
 import { TextInput } from "../../utils/TextInput";
-import { getDownloadURL, ref, StorageReference, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { ArticleParameters } from "../../utils/interfaces";
 import { useGetCategories } from "../../hooks/useGetCategories";
 import { useHighestId } from "../../hooks/useHighestId";
 
 const currentDate = new Date();
 
-export const AddArticle = (): JSX.Element => {
+interface AddArticleProps {
+  categoryOfArticle: string;
+}
+
+export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element => {
   const user = useUser();
   const categories = useGetCategories();
 
+  
   const [success, setSuccess] = useState<boolean>(false);
   const [formError, setFormError] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [articleType, setArticleType] = useState<string>("news");
-  let highestIdFromHook = useHighestId(articleType);
+  console.log(categoryOfArticle);
+  let highestIdFromHook = useHighestId(categoryOfArticle);
+
+  // let getArticlesId = useHighestId("articles")
+
+  // console.log(getArticlesId);
+  
+
+  console.log(highestIdFromHook);
+  
+
+  // useEffect(() => {
+  //   setArticleType(categoryOfArticle)
+  // }, [categoryOfArticle])
+
+// console.log(articleType);
+
 
   const parameters: ArticleParameters = {
-    category: `${articleType}`,
+    category: `${categoryOfArticle}`,
     id: highestIdFromHook + 1,
     title: "",
     content: "",
@@ -42,10 +62,11 @@ export const AddArticle = (): JSX.Element => {
   const [percent, setPercent] = useState<number>(0);
   const [data, setData] = useState<ArticleParameters>(parameters);
   const [articleDatabaseName, setArticleDatabaseName] = useState<string>(`${data.category}_id_${data.id}`);
-  const [obj, setObj] = useState<any>({});
-  const [hashtags, setTags] = useState<string[]>([]);
-  const [selectValue, setSelectValue] = useState<any>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    setArticleDatabaseName(`${data.category}_id_${data.id}`)
+  })
 
   useEffect(() => {
     if (parameters.id > 1) {
@@ -53,10 +74,7 @@ export const AddArticle = (): JSX.Element => {
     } else {
       return;
     }
-  }, [highestIdFromHook]);  
-
-  console.log(data.category);
-  
+  }, [highestIdFromHook, categoryOfArticle]);  
 
   // Handle file upload event and update state
   const handleChange = (event: any) => {
@@ -92,6 +110,7 @@ export const AddArticle = (): JSX.Element => {
   const addArticle = async (newArticleData: ArticleParameters) => {
     await updateDoc(doc(db, "content", newArticleData.category), {
       [newArticleData.databaseTitle]: {
+        category: newArticleData.category,
         id: newArticleData.id,
         title: newArticleData.title,
         content: newArticleData.content,
@@ -145,10 +164,11 @@ export const AddArticle = (): JSX.Element => {
     }
   };
 
-  const handleSelectCategory = (e: any) => {
-    setArticleType(e.target.value)
+  const handleSelectCategory = useCallback((e: any) => {
+    // setArticleType(e.target.value)
     setData({...data, category: e.target.value})
-  }
+}, [categoryOfArticle])
+  
 
  const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -180,9 +200,9 @@ export const AddArticle = (): JSX.Element => {
         onSubmit={handleSubmit}>
         <div className="d-flex flex-row w-100 justify-content-between gap-3 align-items-center">
           <FloatingLabel controlId="floatingSelect" label="Wybierz kategorię" className="d-flex flex-grow-1 mb-3">
-            <Form.Select onChange={handleSelectCategory} size="sm" aria-label="Kategoria artykułów" className="form__control--input" defaultValue={selectValue}>
+            <Form.Select onChange={handleSelectCategory} size="sm" aria-label="Kategoria artykułów" className="form__control--input" value={category}>
             {categories?.map((category: string) => {
-              return <option value={category}>{capitalizeFirstLetter(category)}</option>
+              return <option value={category} key={category}>{capitalizeFirstLetter(category)}</option>
             })}
             </Form.Select>
           </FloatingLabel>

@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 export const AdminMenu = () => {
   const menuItems = [
+    { link: "add_news", descr: "Dodaj newsa" },
     { link: "add_article", descr: "Dodaj artykuł" },
     { link: "edit_article", descr: "Edytuj artykuł" },
-    // { link: "", descr: "Dodaj artykuł" },
     // { link: "", descr: "Dodaj artykuł" },
     // { link: "", descr: "Dodaj artykuł" },
     // { link: "", descr: "Dodaj artykuł" },

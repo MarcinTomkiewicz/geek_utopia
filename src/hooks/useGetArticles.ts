@@ -26,7 +26,7 @@ export const useGetArticles = (category?: string): any => {
 				getArticlesFromDB();
 			}
 		});
-	}, [allCategories]);
+	}, [allCategories, category]);
 
 	const articlesListAsArray: ArticleParameters[] =
 		Object.values(articlesList);

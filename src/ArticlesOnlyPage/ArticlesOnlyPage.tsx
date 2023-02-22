@@ -143,7 +143,7 @@ export const ArticlesOnlyPage = ({
 							borderRadius: "5px",
 						}}
 						className="text-center"
-						value={1}
+						value={10}
 					>
 						10
 					</button>
@@ -156,7 +156,7 @@ export const ArticlesOnlyPage = ({
 							borderRadius: "5px",
 						}}
 						className="text-center"
-						value={2}
+						value={20}
 					>
 						20
 					</button>
@@ -169,7 +169,7 @@ export const ArticlesOnlyPage = ({
 							borderRadius: "5px",
 						}}
 						className="text-center"
-						value={5}
+						value={50}
 					>
 						50
 					</button>

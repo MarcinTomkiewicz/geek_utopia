@@ -17,7 +17,7 @@ export const Tags = ({ article, variant, filteredTag, setFilteredTag, isFromOnly
       );
     } else {
       return (		
-        <Link to={`/news/${filteredTag}`}>
+        <Link to={`/news/${tag}`}>
           <Badge bg={badgeBackground[Math.floor(Math.random() * badgeBackground.length)]}>
             {tag}
           </Badge>
