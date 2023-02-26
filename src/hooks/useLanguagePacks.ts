@@ -30,7 +30,7 @@ export const useLanguagePacks = () => {
       };
       getLanguagesFromDB();
     });
-  }, [packNames]);
+  }, [packNames]);  
 
   return languagePacks;
 };

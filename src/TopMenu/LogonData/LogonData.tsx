@@ -82,11 +82,11 @@ export const LogonData = () => {
   };
   if (user !== null && user !== undefined) {
     return (
-      <div className="d-flex flex-row justify-content-evenly align-items-center mx-3" style={{width: "13%"}}>
-      <button className="logon d-flex w-100" style={{ cursor: "unset", margin: "0", padding: "0" }}>
+      <div className="d-flex flex-row justify-content-evenly align-items-center mx-3">
+      <button className="logon d-flex w-100">
         {language.labels?.greet[langCode]} {user?.name}!
       </button>
-      <Logout isInLeftPanel />
+      <Logout isInLeftPanel={false} />
       </div>
     );
   } else {

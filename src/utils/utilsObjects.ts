@@ -22,4 +22,3 @@ export const monthLabels = [
     "info",
     "dark",
 ];
-

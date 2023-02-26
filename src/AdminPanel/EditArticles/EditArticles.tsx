@@ -11,7 +11,7 @@ import { Modal } from "react-bootstrap";
 import { db } from "../../config/firebaseConfig";
 import { useGetArticles } from "../../hooks/useGetArticles";
 import ReactPaginate from "react-paginate";
-import { ArticleParameters, ArticleType, Months } from "../../utils/interfaces";
+import { ArticleParameters, ArticleType } from "../../utils/interfaces";
 import { Tags } from "../../atoms/Tags/Tags";
 import { generateDate } from "../../utils/generateDate";
 

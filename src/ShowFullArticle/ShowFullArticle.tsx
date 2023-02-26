@@ -6,7 +6,7 @@ import { Tags } from "../atoms/Tags/Tags";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { generateDate } from "../utils/generateDate";
-import { ArticleParameters, ArticleType, Months } from "../utils/interfaces";
+import { ArticleParameters, ArticleType } from "../utils/interfaces";
 import { badgeBackground, monthLabels } from "../utils/utilsObjects";
 
 export const ShowFullArticle = ({ articleType, id }: ArticleType) => {

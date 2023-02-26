@@ -5,7 +5,9 @@ import { Button, Form, OverlayTrigger, Spinner, Tooltip } from "react-bootstrap"
 import { TextInput } from "../utils/TextInput";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
-import { DispatchTypes } from "../utils/interfaces";
+import { DispatchTypes, UserData } from "../utils/interfaces";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
 
 const initialValues: DispatchTypes = {
   email: "",
@@ -14,13 +16,13 @@ const initialValues: DispatchTypes = {
 };
 
 export const Login = ({ isModal }: any) => {
-  const isLogged = useUser();
+  const currentUser = useUser();
   const language = useLanguagePacks();
   const langCode = useLanguageSettings();
 
-  const [user, setUser] = useState(initialValues);
+  const [user, setUser] = useState<DispatchTypes>(initialValues);
 
-  const { email, password } = user;
+  const { email, password } = user; 
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,6 +32,10 @@ export const Login = ({ isModal }: any) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setUser(user);
+        const currentUserID = auth.currentUser !== null ? auth.currentUser.uid : ''
+        updateDoc(doc(db, "users", currentUserID), {
+          ...currentUser, is_online: true
+        })
       })
       .catch((error) => {
         setUser({
@@ -41,7 +47,7 @@ export const Login = ({ isModal }: any) => {
 
   return (
     <Form onSubmit={handleOnSubmit} className={isModal ? "user__form--modal" : "user__form"}>
-      <h4 className="mb-4">{isModal ? "" : language.labels?.logging[langCode]}</h4>
+      <h4 className="my-3">{isModal ? "" : language.labels?.logging[langCode]}</h4>
       <TextInput input={`${language.labels?.email[langCode]}`} isRequired="true" type="email" name="email" data={user} setData={setUser} />
       <TextInput input={`${language.labels?.password[langCode]}`} isRequired="true" type="password" name="password" data={user} setData={setUser} />
       {password.length === 0 || email.length === 0 ? (

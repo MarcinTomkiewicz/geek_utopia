@@ -5,6 +5,7 @@ import { useUser } from "../hooks/useUser";
 import { Logout } from "../LoginAndRegistration/Logout";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
+import { ShowUserProfile } from "../UserProfile/ShowUserProfile";
 
 const LeftPanel: FunctionComponent = () => {
   const user = useUser();
@@ -22,7 +23,7 @@ const LeftPanel: FunctionComponent = () => {
       setLeftPanel(<Registration isModal={false} />);
     }
     if (user !== null) {
-      setLeftPanel(<Logout isInLeftPanel={false}/>);
+      setLeftPanel(<ShowUserProfile isInLeftPanel />);
     }
   }, [panelChanger, user]);
 

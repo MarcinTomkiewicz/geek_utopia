@@ -1,7 +1,7 @@
 import { doc, DocumentData, onSnapshot } from "firebase/firestore";
 import { Badge, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { ArticleParameters, ArticleType, Months } from "../utils/interfaces";
+import { ArticleParameters, ArticleType } from "../utils/interfaces";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";

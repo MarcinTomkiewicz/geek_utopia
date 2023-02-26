@@ -19,6 +19,8 @@ const initialValues: DispatchTypes = {
 
 const createUser = async (uid: string, nickname: string | undefined, email: string, language: number) => {
   await setDoc(doc(db, "users", uid), {
+    avatar: "",
+    hobby: "",
     mail: email,
     is_online: true,
     is_admin: false,
@@ -77,7 +79,7 @@ export const Registration = ({ isModal }: any) => {
         </Form>
       ) : (
         <Form className={isModal ? "user__form--modal" : "user__form"} onSubmit={handleOnSubmit}>
-          <h4 className="mb-4">{isModal ? '' : language.headers?.create_account[langCode]}</h4>
+          <h4 className="mb-4 mt-3">{isModal ? '' : language.headers?.create_account[langCode]}</h4>
           <TextInput input={`${language.labels?.nickname[langCode]}`} isRequired="true" type="text" name="nickname" data={user} setData={setUser} />
 
           <TextInput input={`${language.labels?.email[langCode]}`} isRequired="true" type="email" name="email" data={user} setData={setUser} />
