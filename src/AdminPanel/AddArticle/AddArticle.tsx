@@ -1,8 +1,8 @@
 import { useUser } from "../../hooks/useUser";
 import { db, storage } from "../../config/firebaseConfig";
 import { doc, Timestamp, updateDoc } from "firebase/firestore";
-import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
-import { Alert, Button, FloatingLabel, Form, Modal} from "react-bootstrap";
+import { ChangeEvent, FormEvent, useEffect, useState, MouseEvent } from "react";
+import { Alert, Button, FloatingLabel, Form, Modal } from "react-bootstrap";
 import { TextInput } from "../../utils/TextInput";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { ArticleParameters } from "../../utils/interfaces";
@@ -11,88 +11,80 @@ import { useHighestId } from "../../hooks/useHighestId";
 
 const currentDate = new Date();
 
+const initialParameters: ArticleParameters = {
+  category: "",
+  id: 0,
+  title: "",
+  content: "",
+  author: "",
+  date: Timestamp.fromDate(currentDate),
+  picture: "",
+  rating: [],
+  tags: [],
+  short_descr: "",
+  isOnline: false,
+  isAdult: false,
+  databaseTitle: "",
+};
+
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 interface AddArticleProps {
   categoryOfArticle: string;
 }
 
-export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element => {
+type UserFile = {
+  file: File;
+  url: string;
+};
+
+export const AddArticle = ({
+  categoryOfArticle,
+}: AddArticleProps): JSX.Element => {
   const user = useUser();
   const categories = useGetCategories();
 
-  
-  const [success, setSuccess] = useState<boolean>(false);
-  const [formError, setFormError] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  console.log(categoryOfArticle);
-  let highestIdFromHook = useHighestId(categoryOfArticle);
+  const [success, setSuccess] = useState(false);
+  const [formError, setFormError] = useState(false);
+  const [error, setError] = useState("");
 
-  // let getArticlesId = useHighestId("articles")
+  const [userFile, setUserFile] = useState<UserFile | null>(null);
+  const [percent, setPercent] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
 
-  // console.log(getArticlesId);
-  
+  const [articleCategory, setArticleCategory] = useState(categoryOfArticle);
 
-  console.log(highestIdFromHook);
-  
+  const [data, setData] = useState<ArticleParameters>(initialParameters);
 
-  // useEffect(() => {
-  //   setArticleType(categoryOfArticle)
-  // }, [categoryOfArticle])
-
-// console.log(articleType);
-
-
-  const parameters: ArticleParameters = {
-    category: `${categoryOfArticle}`,
-    id: highestIdFromHook + 1,
-    title: "",
-    content: "",
-    author: "",
-    date: Timestamp.fromDate(currentDate),
-    picture: "",
-    rating: [],
-    tags: [],
-    short_descr: "",
-    isOnline: false,
-    isAdult: false,
-    databaseTitle: "",
-  };
-
-  const [file, setFile] = useState<any>("");
-  const [displayFile, setDisplayFile] = useState<any>();
-  const [percent, setPercent] = useState<number>(0);
-  const [data, setData] = useState<ArticleParameters>(parameters);
-  const [articleDatabaseName, setArticleDatabaseName] = useState<string>(`${data.category}_id_${data.id}`);
-  const [openModal, setOpenModal] = useState<boolean>(false);
-
-  useEffect(() => {
-    setArticleDatabaseName(`${data.category}_id_${data.id}`)
-  })
-
-  useEffect(() => {
-    if (parameters.id > 1) {
-      setData({ ...data, id: highestIdFromHook + 1 });
-    } else {
-      return;
-    }
-  }, [highestIdFromHook, categoryOfArticle]);  
+  const highestIdFromHook = useHighestId(data.category);
 
   // Handle file upload event and update state
-  const handleChange = (event: any) => {
-    setFile(event.target.files[0]);
-    setDisplayFile(URL.createObjectURL(event.target.files[0]));
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    setUserFile({
+      url: URL.createObjectURL(e.target.files[0]),
+      file: e.target.files[0],
+    });
   };
 
   const handleUpload = async () => {
-    const storageRef = ref(storage, `/files/${data.id}/${file.name}`);
+    if (!userFile) return;
+
+    const storageRef = ref(storage, `/files/${data.id}/${userFile.file.name}`);
 
     // progress can be paused and resumed. It also exposes progress updates.
     // Receives the storage reference and the file to upload.
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const uploadTask = uploadBytesResumable(storageRef, userFile.file);
 
     uploadTask.on(
       "state_changed",
       (snapshot) => {
-        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
 
         // update progress
         setPercent(percent);
@@ -130,11 +122,27 @@ export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element =>
     setData({ ...data, [e.target.name]: e.target.checked });
   };
 
-  const { category, id, title, content, author, date, picture, tags, short_descr, isOnline, isAdult } = data;
+  const {
+    category,
+    id,
+    title,
+    content,
+    author,
+    date,
+    picture,
+    tags,
+    short_descr,
+    isOnline,
+    isAdult,
+  } = data;
 
-  const resetForm = (e?: React.MouseEvent<HTMLElement>) => {
-    setData({ ...parameters });
-    setArticleDatabaseName(`${data.category}_id_${data.id}`);
+  const resetForm = (e?: MouseEvent<HTMLElement>) => {
+    setData({
+      ...initialParameters,
+      category: categoryOfArticle,
+      id: highestIdFromHook + 1,
+    });
+    setUserFile(null);
     if (e?.currentTarget.id === "cancel") {
       setSuccess(false);
     }
@@ -142,7 +150,7 @@ export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element =>
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file) {
+    if (!userFile) {
       alert("Please upload an image first!");
       return;
     }
@@ -153,32 +161,43 @@ export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element =>
         const response = await addArticle(data);
         setSuccess(true);
         resetForm();
-      } catch (err: unknown) {
-        console.log(err);
+      } catch (err: any) {
+        console.error(err);
         setFormError((prev) => !prev);
         if (err instanceof Error) {
           setError(err.message);
         }
-        console.log(error);
       }
     }
   };
 
-  const handleSelectCategory = useCallback((e: any) => {
-    // setArticleType(e.target.value)
-    setData({...data, category: e.target.value})
-}, [categoryOfArticle])
-  
+  const handleSelectCategory = (e: ChangeEvent<HTMLSelectElement>) =>
+    setArticleCategory(e.target.value);
 
- const capitalizeFirstLetter = (string: string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
+  useEffect(() => {
+    setArticleCategory(categoryOfArticle);
+  }, [categoryOfArticle]);
+
+  useEffect(() => {
+    setData((prev) => ({
+      ...prev,
+      id: highestIdFromHook + 1,
+      category: articleCategory,
+    }));
+  }, [articleCategory, highestIdFromHook]);
+
+  // useEffect(() => {
+  //   if (parameters.id > 1) {
+  //     setData({ ...data, id: highestIdFromHook + 1 });
+  //   }
+  // }, [highestIdFromHook, data]);
 
   return (
     <div className="articles__content--wrapper">
       {success ? (
         <Alert variant="success" style={{ width: "80%", alignSelf: "center" }}>
-          Artykuł "{data.title}" został pomyślnie dodany do bazy pod id: {data.id}
+          Artykuł "{data.title}" został pomyślnie dodany do bazy pod id:{" "}
+          {data.id}
         </Alert>
       ) : (
         ""
@@ -190,27 +209,74 @@ export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element =>
       ) : (
         ""
       )}
-      <h1 className="text-center mb-4">Dodaj {category === "news" ? capitalizeFirstLetter(category) : `artykuł w kategorii: ${capitalizeFirstLetter(category)}`}</h1>
+      <h1 className="text-center mb-4">
+        Dodaj{" "}
+        {category === "news"
+          ? capitalizeFirstLetter(category)
+          : `artykuł w kategorii: ${capitalizeFirstLetter(category)}`}
+      </h1>
       <Form
         style={{
           width: "80%",
           alignSelf: "center",
           alignItems: "center",
         }}
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <div className="d-flex flex-row w-100 justify-content-between gap-3 align-items-center">
-          <FloatingLabel controlId="floatingSelect" label="Wybierz kategorię" className="d-flex flex-grow-1 mb-3">
-            <Form.Select onChange={handleSelectCategory} size="sm" aria-label="Kategoria artykułów" className="form__control--input" value={category}>
-            {categories?.map((category: string) => {
-              return <option value={category} key={category}>{capitalizeFirstLetter(category)}</option>
-            })}
+          <FloatingLabel
+            controlId="floatingSelect"
+            label="Wybierz kategorię"
+            className="d-flex flex-grow-1 mb-3"
+          >
+            <Form.Select
+              onChange={handleSelectCategory}
+              size="sm"
+              aria-label="Kategoria artykułów"
+              className="form__control--input"
+              value={category}
+            >
+              {categories?.map((category: string) => {
+                return (
+                  <option value={category} key={category}>
+                    {capitalizeFirstLetter(category)}
+                  </option>
+                );
+              })}
             </Form.Select>
           </FloatingLabel>
-          <Button variant="primary" onClick={() => setOpenModal(true)}>Dodaj kategorię artykułów</Button>
+          <Button variant="primary" onClick={() => setOpenModal(true)}>
+            Dodaj kategorię artykułów
+          </Button>
         </div>
-        <TextInput input="Tytuł" isRequired="true" type="text" name="title" data={data} setData={setData} />
-        <TextInput input="Krótki opis" isRequired="true" type="text" name="short_descr" data={data} setData={setData} textarea height={75} />
-        <TextInput input="Treść" isRequired="true" type="text" name="content" data={data} setData={setData} textarea height={200} />
+        <TextInput
+          input="Tytuł"
+          isRequired="true"
+          type="text"
+          name="title"
+          data={data}
+          setData={setData}
+        />
+        <TextInput
+          input="Krótki opis"
+          isRequired="true"
+          type="text"
+          name="short_descr"
+          data={data}
+          setData={setData}
+          textarea
+          height={75}
+        />
+        <TextInput
+          input="Treść"
+          isRequired="true"
+          type="text"
+          name="content"
+          data={data}
+          setData={setData}
+          textarea
+          height={200}
+        />
         <div
           style={{
             display: "flex",
@@ -218,25 +284,90 @@ export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element =>
             justifyContent: "space-between",
             alignItems: "center",
           }}
-          className="pb-3">
+          className="pb-3"
+        >
           <Form.Group controlId="formFile">
             <Form.Label>Dodaj obrazek</Form.Label>
-            <Form.Control className="form__control--input" type="file" accept="image/*" onChange={handleChange} />
+            <Form.Control
+              className="form__control--input"
+              type="file"
+              accept="image/*"
+              onChange={handleChange}
+            />
           </Form.Group>
-          {file ? <img src={displayFile} style={{ maxHeight: "200px" }}></img> : ""}
+          {userFile ? (
+            <img src={userFile.url} style={{ maxHeight: "200px" }} alt=""></img>
+          ) : (
+            ""
+          )}
         </div>
         <div className="d-flex flex-row justify-content-between align-items-center gap-5">
-          <TextInput input="Data dodania" isRequired="true" disabled type="text" name="date" data={data} setData={setData} />
-          <TextInput input="Tagi" isRequired="true" type="text" name="tags" data={data} setData={setData} textarea height={100} />
-          <TextInput input="ID Newsa" isRequired="true" disabled type="number" name="id" data={data} setData={setData} />
+          <TextInput
+            input="Data dodania"
+            isRequired="true"
+            disabled
+            type="text"
+            name="date"
+            data={data}
+            setData={setData}
+          />
+          <TextInput
+            input="Tagi"
+            isRequired="true"
+            type="text"
+            name="tags"
+            data={data}
+            setData={setData}
+            textarea
+            height={100}
+          />
+          <TextInput
+            input="ID Newsa"
+            isRequired="true"
+            disabled
+            type="number"
+            name="id"
+            data={data}
+            setData={setData}
+          />
         </div>
         <div className="d-flex flex-row justify-content-between align-items-center gap-5">
           <div className="d-flex flex-column justify-content-between align-items-start w-100">
-            <Form.Check type="switch" label="Opublikować?" id="isOnline" name="isOnline" onChange={handleSwitch} className="me-3"></Form.Check>
-            <Form.Check type="switch" label="Tylko dla dorosłych?" id="isAdult" name="isAdult" onChange={handleSwitch} className="mb-3 me-3"></Form.Check>
+            <Form.Check
+              type="switch"
+              label="Opublikować?"
+              id="isOnline"
+              name="isOnline"
+              onChange={handleSwitch}
+              className="me-3"
+            ></Form.Check>
+            <Form.Check
+              type="switch"
+              label="Tylko dla dorosłych?"
+              id="isAdult"
+              name="isAdult"
+              onChange={handleSwitch}
+              className="mb-3 me-3"
+            ></Form.Check>
           </div>
-          <TextInput input="Autor" isRequired="true" disabled type="text" name="author" data={data} setData={setData} />
-          <TextInput input="Nazwa w bazie" isRequired="true" disabled type="text" name="databaseTitle" data={data} setData={setData} />
+          <TextInput
+            input="Autor"
+            isRequired="true"
+            disabled
+            type="text"
+            name="author"
+            data={data}
+            setData={setData}
+          />
+          <TextInput
+            input="Nazwa w bazie"
+            isRequired="true"
+            disabled
+            type="text"
+            name="databaseTitle"
+            data={data}
+            setData={setData}
+          />
         </div>
         <div
           style={{
@@ -244,11 +375,17 @@ export const AddArticle = ({categoryOfArticle}: AddArticleProps): JSX.Element =>
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-          }}>
+          }}
+        >
           <Button variant="info" type="submit">
             Zapisz dane
           </Button>
-          <Button variant="warning" type="reset" onClick={resetForm} id="cancel">
+          <Button
+            variant="warning"
+            type="reset"
+            onClick={resetForm}
+            id="cancel"
+          >
             Wyczyść formularz
           </Button>
         </div>

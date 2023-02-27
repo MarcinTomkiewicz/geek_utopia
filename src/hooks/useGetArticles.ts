@@ -1,50 +1,40 @@
 import { db } from "../config/firebaseConfig";
-import {
-	collection,
-	query,
-	doc,
-	getDoc,
-	getDocs,
-	DocumentSnapshot,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ArticleParameters } from "../utils/interfaces";
-import { useGetCategories } from "./useGetCategories";
+
+const compareIdsForSorting = (a: ArticleParameters, b: ArticleParameters) => {
+  if (a.id < b.id) {
+    return 1;
+  }
+  if (a.id > b.id) {
+    return -1;
+  }
+  return 0;
+};
 
 export const useGetArticles = (category?: string): any => {
-	const [articlesList, setArticlesList] = useState<any>({});
-	const allCategories = useGetCategories();
+  const [articlesList, setArticlesList] = useState<ArticleParameters[]>([]);
 
-	useEffect(() => {
-		allCategories.map((currentCategory: string) => {
-			if (currentCategory === category) {
-				const getArticlesFromDB = async () => {
-					const docRef = doc(db, "content", currentCategory);
-					const docSnap = await getDoc(docRef);					
-					setArticlesList(docSnap.data());					
-				};
-				getArticlesFromDB();
-			}
-		});
-	}, [allCategories, category]);
+  useEffect(() => {
+    if (!category) return;
 
-	const articlesListAsArray: ArticleParameters[] =
-		Object.values(articlesList);
+    const getArticlesFromDB = async () => {
+      const docRef = doc(db, "content", category);
+      const docSnap = await getDoc(docRef);
 
-	const compareIdsForSorting = (
-		a: ArticleParameters,
-		b: ArticleParameters
-	) => {
-		if (a.id < b.id) {
-			return 1;
-		}
-		if (a.id > b.id) {
-			return -1;
-		}
-		return 0;
-	};
+      const dataObj = docSnap.data();
 
-	const sortedArticlesList = articlesListAsArray.sort(compareIdsForSorting);
+      if (!dataObj) return;
 
-	return sortedArticlesList;
+      const convertToArray = Object.values(dataObj);
+      const sortedArticles = convertToArray.sort(compareIdsForSorting);
+
+      setArticlesList(sortedArticles);
+    };
+    getArticlesFromDB();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
+
+  return articlesList;
 };

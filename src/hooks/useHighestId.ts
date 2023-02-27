@@ -1,43 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ArticleParameters } from "../utils/interfaces";
 import { useGetArticles } from "./useGetArticles";
 
 export const useHighestId = (category?: string): any => {
-  const [highestId, setHighestId] = useState<number>(0);
+  const [highestId, setHighestId] = useState(0);
   const articlesListAsArray = useGetArticles(category);
-  const articlesIds: number[] = [];
 
   console.log(category);
-  console.log(articlesListAsArray);
 
-    articlesListAsArray.forEach((article: ArticleParameters) => {
-      articlesIds.push(article?.id);
-    });
-  
+  const articlesIds: number[] = useMemo(
+    () =>
+      articlesListAsArray
+        .map((article: ArticleParameters) => article?.id)
+        .sort((a: number, b: number) => a - b),
+    [articlesListAsArray]
+  );
 
   useEffect(() => {
     if (articlesIds.length === 0) {
-      return setHighestId(0)
+      setHighestId(0);
+      return;
     }
-    if (
-      articlesIds
-        .sort(function (a, b) {
-          return b - a;
-        })
-        .reverse()[0] !== undefined ||
-      articlesIds
-        .sort(function (a, b) {
-          return b - a;
-        })
-        .reverse()[0] <= 0
-    ) {
-      setHighestId(
-        articlesIds.sort(function (a, b) {
-          return b - a;
-        })[0]
-      );
-    }
-  }, [articlesIds.length]);
+    setHighestId(articlesIds[articlesIds.length - 1]);
+  }, [articlesIds]);
 
   return highestId;
 };
