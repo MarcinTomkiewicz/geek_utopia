@@ -6,8 +6,6 @@ export const useHighestId = (category?: string): any => {
   const [highestId, setHighestId] = useState(0);
   const articlesListAsArray = useGetArticles(category);
 
-  console.log(category);
-
   const articlesIds: number[] = useMemo(
     () =>
       articlesListAsArray

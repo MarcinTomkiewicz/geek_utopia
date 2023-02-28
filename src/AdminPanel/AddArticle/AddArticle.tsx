@@ -5,392 +5,424 @@ import { ChangeEvent, FormEvent, useEffect, useState, MouseEvent } from "react";
 import { Alert, Button, FloatingLabel, Form, Modal } from "react-bootstrap";
 import { TextInput } from "../../utils/TextInput";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { ArticleParameters } from "../../utils/interfaces";
+import { AddArticleProps, ArticleParameters } from "../../utils/interfaces";
 import { useGetCategories } from "../../hooks/useGetCategories";
 import { useHighestId } from "../../hooks/useHighestId";
+import { useGetArticles } from "../../hooks/useGetArticles";
 
 const currentDate = new Date();
 
 const initialParameters: ArticleParameters = {
-  category: "",
-  id: 0,
-  title: "",
-  content: "",
-  author: "",
-  date: Timestamp.fromDate(currentDate),
-  picture: "",
-  rating: [],
-  tags: [],
-  short_descr: "",
-  isOnline: false,
-  isAdult: false,
-  databaseTitle: "",
+	category: "",
+	id: 0,
+	title: "",
+	content: "",
+	author: "",
+	date: Timestamp.fromDate(currentDate),
+	picture: "",
+	rating: [],
+	tags: [],
+	short_descr: "",
+	isOnline: false,
+	isAdult: false,
+	databaseTitle: "",
 };
 
 const capitalizeFirstLetter = (string: string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+	return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-interface AddArticleProps {
-  categoryOfArticle: string;
-}
-
 type UserFile = {
-  file: File;
-  url: string;
+	file: File;
+	url: string;
 };
 
 export const AddArticle = ({
-  categoryOfArticle,
+	categoryOfArticle,
 }: AddArticleProps): JSX.Element => {
-  const user = useUser();
-  const categories = useGetCategories();
+	const user = useUser();
+	const categories = useGetCategories();
+  
+	const [success, setSuccess] = useState(false);
+	const [formError, setFormError] = useState(false);
+	const [error, setError] = useState("");
+  
+	const [userFile, setUserFile] = useState<UserFile | null>(null);
+	const [percent, setPercent] = useState(0);
+	const [openModal, setOpenModal] = useState(false);
+  
+	const [isNewsOrArticle, setIsNewsOrArticle] = useState(categoryOfArticle);
+	const [articleCategory, setArticleCategory] = useState<string[]>([""]);
+  const articles = useGetArticles(categoryOfArticle);
 
-  const [success, setSuccess] = useState(false);
-  const [formError, setFormError] = useState(false);
-  const [error, setError] = useState("");
+	const [data, setData] = useState<ArticleParameters>(initialParameters);
 
-  const [userFile, setUserFile] = useState<UserFile | null>(null);
-  const [percent, setPercent] = useState(0);
-  const [openModal, setOpenModal] = useState(false);
+	const highestIdFromHook = useHighestId(data.category);
+	const [listOfCategories, setListOfCategories] = useState<string[]>([]);
 
-  const [articleCategory, setArticleCategory] = useState(categoryOfArticle);
+	const createListOfCategories = () => {
+		let articlesCategories: string[] = [];
+		articles.map((article: ArticleParameters) => {
+			articlesCategories.push(article.category);
+		});
+    
+		setListOfCategories(createListOfUniqueCategories(articlesCategories));
+	};
 
-  const [data, setData] = useState<ArticleParameters>(initialParameters);
+	const createListOfUniqueCategories = (articlesCategories: string[]) => {
+    let uniqueCategories: string[] = []
+		articlesCategories.forEach((element) => {
+			if (!uniqueCategories?.includes(element)) {
+				if (element !== undefined) {
+					uniqueCategories.push(element);
+				}
+			}
+		});    
+		return uniqueCategories;
+	};
 
-  const highestIdFromHook = useHighestId(data.category);
+	useEffect(() => {
+		createListOfCategories();
+	}, [articles]);
 
-  // Handle file upload event and update state
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+	// Handle file upload event and update state
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (!e.target.files) return;
 
-    setUserFile({
-      url: URL.createObjectURL(e.target.files[0]),
-      file: e.target.files[0],
-    });
-  };
+		setUserFile({
+			url: URL.createObjectURL(e.target.files[0]),
+			file: e.target.files[0],
+		});
+	};
 
-  const handleUpload = async () => {
-    if (!userFile) return;
+	const handleUpload = async () => {
+		if (!userFile) return;
 
-    const storageRef = ref(storage, `/files/${data.id}/${userFile.file.name}`);
+		const storageRef = ref(
+			storage,
+			`/files/${data.id}/${userFile.file.name}`
+		);
 
-    // progress can be paused and resumed. It also exposes progress updates.
-    // Receives the storage reference and the file to upload.
-    const uploadTask = uploadBytesResumable(storageRef, userFile.file);
+		// progress can be paused and resumed. It also exposes progress updates.
+		// Receives the storage reference and the file to upload.
+		const uploadTask = uploadBytesResumable(storageRef, userFile.file);
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
+		uploadTask.on(
+			"state_changed",
+			(snapshot) => {
+				const percent = Math.round(
+					(snapshot.bytesTransferred / snapshot.totalBytes) * 100
+				);
 
-        // update progress
-        setPercent(percent);
-      },
-      (err) => console.log(err),
-      () => {
-        // download url
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          setData({ ...data, picture: url });
-        });
-      }
-    );
-  };
+				// update progress
+				setPercent(percent);
+			},
+			(err) => console.log(err),
+			() => {
+				// download url
+				getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+					setData({ ...data, picture: url });
+				});
+			}
+		);
+	};
 
-  const addArticle = async (newArticleData: ArticleParameters) => {
-    await updateDoc(doc(db, "content", newArticleData.category), {
-      [newArticleData.databaseTitle]: {
-        category: newArticleData.category,
-        id: newArticleData.id,
-        title: newArticleData.title,
-        content: newArticleData.content,
-        author: newArticleData.author,
-        date: newArticleData.date,
-        picture: newArticleData.picture,
-        rating: newArticleData.rating,
-        short_descr: newArticleData.short_descr,
-        tags: newArticleData.tags,
-        is_online: newArticleData.isOnline,
-        is_adult: newArticleData.isAdult,
-      },
-    });
-  };
+	const addArticle = async (newArticleData: ArticleParameters) => {
+		await updateDoc(doc(db, "content", newArticleData.category), {
+			[newArticleData.databaseTitle]: {
+				category: newArticleData.category,
+				id: newArticleData.id,
+				title: newArticleData.title,
+				content: newArticleData.content,
+				author: newArticleData.author,
+				date: newArticleData.date,
+				picture: newArticleData.picture,
+				rating: newArticleData.rating,
+				short_descr: newArticleData.short_descr,
+				tags: newArticleData.tags,
+				is_online: newArticleData.isOnline,
+				is_adult: newArticleData.isAdult,
+			},
+		});
+	};
 
-  const handleSwitch = (e: ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, [e.target.name]: e.target.checked });
-  };
+	const handleSwitch = (e: ChangeEvent<HTMLInputElement>) => {
+		setData({ ...data, [e.target.name]: e.target.checked });
+	};
 
-  const {
-    category,
-    id,
-    title,
-    content,
-    author,
-    date,
-    picture,
-    tags,
-    short_descr,
-    isOnline,
-    isAdult,
-  } = data;
+	const {
+		category,
+		id,
+		title,
+		content,
+		author,
+		date,
+		picture,
+		tags,
+		short_descr,
+		isOnline,
+		isAdult,
+	} = data;
 
-  const resetForm = (e?: MouseEvent<HTMLElement>) => {
-    setData({
-      ...initialParameters,
-      category: categoryOfArticle,
-      id: highestIdFromHook + 1,
-    });
-    setUserFile(null);
-    if (e?.currentTarget.id === "cancel") {
-      setSuccess(false);
-    }
-  };
+	const resetForm = (e?: MouseEvent<HTMLElement>) => {
+		setData({
+			...initialParameters,
+			category: categoryOfArticle,
+			id: highestIdFromHook + 1,
+		});
+		setUserFile(null);
+		if (e?.currentTarget.id === "cancel") {
+			setSuccess(false);
+		}
+	};
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!userFile) {
-      alert("Please upload an image first!");
-      return;
-    }
+	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (!userFile) {
+			alert("Please upload an image first!");
+			return;
+		}
 
-    await handleUpload();
-    if (data.databaseTitle !== "" && data.picture !== "") {
-      try {
-        const response = await addArticle(data);
-        setSuccess(true);
-        resetForm();
-      } catch (err: any) {
-        console.error(err);
-        setFormError((prev) => !prev);
-        if (err instanceof Error) {
-          setError(err.message);
-        }
-      }
-    }
-  };
+		await handleUpload();
+		if (data.databaseTitle !== "" && data.picture !== "") {
+			try {
+				const response = await addArticle(data);
+				setSuccess(true);
+				resetForm();
+			} catch (err: any) {
+				console.error(err);
+				setFormError((prev) => !prev);
+				if (err instanceof Error) {
+					setError(err.message);
+				}
+			}
+		}
+	};
 
-  const handleSelectCategory = (e: ChangeEvent<HTMLSelectElement>) =>
-    setArticleCategory(e.target.value);
+	const handleSelectCategory = (e: ChangeEvent<HTMLSelectElement>) =>
+		setIsNewsOrArticle(e.target.value);
 
-  useEffect(() => {
-    setArticleCategory(categoryOfArticle);
-  }, [categoryOfArticle]);
+	useEffect(() => {
+		setIsNewsOrArticle(categoryOfArticle);
+	}, [categoryOfArticle]);
 
-  useEffect(() => {
-    setData((prev) => ({
-      ...prev,
-      id: highestIdFromHook + 1,
-      category: articleCategory,
-    }));
-  }, [articleCategory, highestIdFromHook]);
+	useEffect(() => {
+		setData((prev) => ({
+			...prev,
+			id: highestIdFromHook + 1,
+			category: isNewsOrArticle,
+		}));
+	}, [isNewsOrArticle, highestIdFromHook]);
 
-  // useEffect(() => {
-  //   if (parameters.id > 1) {
-  //     setData({ ...data, id: highestIdFromHook + 1 });
-  //   }
-  // }, [highestIdFromHook, data]);
-
-  return (
-    <div className="articles__content--wrapper">
-      {success ? (
-        <Alert variant="success" style={{ width: "80%", alignSelf: "center" }}>
-          Artykuł "{data.title}" został pomyślnie dodany do bazy pod id:{" "}
-          {data.id}
-        </Alert>
-      ) : (
-        ""
-      )}
-      {formError ? (
-        <Alert variant="danger">
-          Artykuł "{data.title}" nie został dodany. Powód: {error}
-        </Alert>
-      ) : (
-        ""
-      )}
-      <h1 className="text-center mb-4">
-        Dodaj{" "}
-        {category === "news"
-          ? capitalizeFirstLetter(category)
-          : `artykuł w kategorii: ${capitalizeFirstLetter(category)}`}
-      </h1>
-      <Form
-        style={{
-          width: "80%",
-          alignSelf: "center",
-          alignItems: "center",
-        }}
-        onSubmit={handleSubmit}
-      >
-        <div className="d-flex flex-row w-100 justify-content-between gap-3 align-items-center">
-          <FloatingLabel
-            controlId="floatingSelect"
-            label="Wybierz kategorię"
-            className="d-flex flex-grow-1 mb-3"
-          >
-            <Form.Select
-              onChange={handleSelectCategory}
-              size="sm"
-              aria-label="Kategoria artykułów"
-              className="form__control--input"
-              value={category}
-            >
-              {categories?.map((category: string) => {
-                return (
-                  <option value={category} key={category}>
-                    {capitalizeFirstLetter(category)}
-                  </option>
-                );
-              })}
-            </Form.Select>
-          </FloatingLabel>
-          <Button variant="primary" onClick={() => setOpenModal(true)}>
-            Dodaj kategorię artykułów
-          </Button>
-        </div>
-        <TextInput
-          input="Tytuł"
-          isRequired="true"
-          type="text"
-          name="title"
-          data={data}
-          setData={setData}
-        />
-        <TextInput
-          input="Krótki opis"
-          isRequired="true"
-          type="text"
-          name="short_descr"
-          data={data}
-          setData={setData}
-          textarea
-          height={75}
-        />
-        <TextInput
-          input="Treść"
-          isRequired="true"
-          type="text"
-          name="content"
-          data={data}
-          setData={setData}
-          textarea
-          height={200}
-        />
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-          className="pb-3"
-        >
-          <Form.Group controlId="formFile">
-            <Form.Label>Dodaj obrazek</Form.Label>
-            <Form.Control
-              className="form__control--input"
-              type="file"
-              accept="image/*"
-              onChange={handleChange}
-            />
-          </Form.Group>
-          {userFile ? (
-            <img src={userFile.url} style={{ maxHeight: "200px" }} alt=""></img>
-          ) : (
-            ""
-          )}
-        </div>
-        <div className="d-flex flex-row justify-content-between align-items-center gap-5">
-          <TextInput
-            input="Data dodania"
-            isRequired="true"
-            disabled
-            type="text"
-            name="date"
-            data={data}
-            setData={setData}
-          />
-          <TextInput
-            input="Tagi"
-            isRequired="true"
-            type="text"
-            name="tags"
-            data={data}
-            setData={setData}
-            textarea
-            height={100}
-          />
-          <TextInput
-            input="ID Newsa"
-            isRequired="true"
-            disabled
-            type="number"
-            name="id"
-            data={data}
-            setData={setData}
-          />
-        </div>
-        <div className="d-flex flex-row justify-content-between align-items-center gap-5">
-          <div className="d-flex flex-column justify-content-between align-items-start w-100">
-            <Form.Check
-              type="switch"
-              label="Opublikować?"
-              id="isOnline"
-              name="isOnline"
-              onChange={handleSwitch}
-              className="me-3"
-            ></Form.Check>
-            <Form.Check
-              type="switch"
-              label="Tylko dla dorosłych?"
-              id="isAdult"
-              name="isAdult"
-              onChange={handleSwitch}
-              className="mb-3 me-3"
-            ></Form.Check>
-          </div>
-          <TextInput
-            input="Autor"
-            isRequired="true"
-            disabled
-            type="text"
-            name="author"
-            data={data}
-            setData={setData}
-          />
-          <TextInput
-            input="Nazwa w bazie"
-            isRequired="true"
-            disabled
-            type="text"
-            name="databaseTitle"
-            data={data}
-            setData={setData}
-          />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-          }}
-        >
-          <Button variant="info" type="submit">
-            Zapisz dane
-          </Button>
-          <Button
-            variant="warning"
-            type="reset"
-            onClick={resetForm}
-            id="cancel"
-          >
-            Wyczyść formularz
-          </Button>
-        </div>
-      </Form>
-      {/* <Modal
+	return (
+		<div className="articles__content--wrapper">
+			{success ? (
+				<Alert
+					variant="success"
+					style={{ width: "80%", alignSelf: "center" }}
+				>
+					Artykuł "{data.title}" został pomyślnie dodany do bazy pod
+					id: {data.id}
+				</Alert>
+			) : (
+				""
+			)}
+			{formError ? (
+				<Alert variant="danger">
+					Artykuł "{data.title}" nie został dodany. Powód: {error}
+				</Alert>
+			) : (
+				""
+			)}
+			<h1 className="text-center mb-4">
+				Dodaj{" "}
+				{category === "news"
+					? capitalizeFirstLetter(category)
+					: `artykuł w kategorii: ${capitalizeFirstLetter(category)}`}
+			</h1>
+			<Form
+				style={{
+					width: "80%",
+					alignSelf: "center",
+					alignItems: "center",
+				}}
+				onSubmit={handleSubmit}
+			>
+				<div className="d-flex flex-row w-100 justify-content-between gap-3 align-items-center">
+					<FloatingLabel
+						controlId="floatingSelect"
+						label="Wybierz kategorię"
+						className="d-flex flex-grow-1 mb-3"
+					>
+						<Form.Select
+							onChange={handleSelectCategory}
+							size="sm"
+							aria-label="Kategoria artykułów"
+							className="form__control--input"
+							value={category}
+						>
+							{categories?.map((category: string) => {
+								return (
+									<option value={category} key={category}>
+										{capitalizeFirstLetter(category)}
+									</option>
+								);
+							})}
+						</Form.Select>
+					</FloatingLabel>
+					<Button
+						variant="primary"
+						onClick={() => setOpenModal(true)}
+					>
+						Dodaj kategorię artykułów
+					</Button>
+				</div>
+				<TextInput
+					input="Tytuł"
+					isRequired="true"
+					type="text"
+					name="title"
+					data={data}
+					setData={setData}
+				/>
+				<TextInput
+					input="Krótki opis"
+					isRequired="true"
+					type="text"
+					name="short_descr"
+					data={data}
+					setData={setData}
+					textarea
+					height={75}
+				/>
+				<TextInput
+					input="Treść"
+					isRequired="true"
+					type="text"
+					name="content"
+					data={data}
+					setData={setData}
+					textarea
+					height={200}
+				/>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-between",
+						alignItems: "center",
+					}}
+					className="pb-3"
+				>
+					<Form.Group controlId="formFile">
+						<Form.Label>Dodaj obrazek</Form.Label>
+						<Form.Control
+							className="form__control--input"
+							type="file"
+							accept="image/*"
+							onChange={handleChange}
+						/>
+					</Form.Group>
+					{userFile ? (
+						<img
+							src={userFile.url}
+							style={{ maxHeight: "200px" }}
+							alt=""
+						></img>
+					) : (
+						""
+					)}
+				</div>
+				<div className="d-flex flex-row justify-content-between align-items-center gap-5">
+					<TextInput
+						input="Data dodania"
+						isRequired="true"
+						disabled
+						type="text"
+						name="date"
+						data={data}
+						setData={setData}
+					/>
+					<TextInput
+						input="Tagi"
+						isRequired="true"
+						type="text"
+						name="tags"
+						data={data}
+						setData={setData}
+						textarea
+						height={100}
+					/>
+					<TextInput
+						input="ID Newsa"
+						isRequired="true"
+						disabled
+						type="number"
+						name="id"
+						data={data}
+						setData={setData}
+					/>
+				</div>
+				<div className="d-flex flex-row justify-content-between align-items-center gap-5">
+					<div className="d-flex flex-column justify-content-between align-items-start w-100">
+						<Form.Check
+							type="switch"
+							label="Opublikować?"
+							id="isOnline"
+							name="isOnline"
+							onChange={handleSwitch}
+							className="me-3"
+						></Form.Check>
+						<Form.Check
+							type="switch"
+							label="Tylko dla dorosłych?"
+							id="isAdult"
+							name="isAdult"
+							onChange={handleSwitch}
+							className="mb-3 me-3"
+						></Form.Check>
+					</div>
+					<TextInput
+						input="Autor"
+						isRequired="true"
+						disabled
+						type="text"
+						name="author"
+						data={data}
+						setData={setData}
+					/>
+					<TextInput
+						input="Nazwa w bazie"
+						isRequired="true"
+						disabled
+						type="text"
+						name="databaseTitle"
+						data={data}
+						setData={setData}
+					/>
+				</div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-around",
+						alignItems: "center",
+					}}
+				>
+					<Button variant="info" type="submit">
+						Zapisz dane
+					</Button>
+					<Button
+						variant="warning"
+						type="reset"
+						onClick={resetForm}
+						id="cancel"
+					>
+						Wyczyść formularz
+					</Button>
+				</div>
+			</Form>
+			{/* <Modal
 				size="lg"
 				show={() => {return setOpenModal(true)}}
 				onHide={() => setOpenModal(false)}
@@ -414,6 +446,6 @@ export const AddArticle = ({
 					<TextInput 
 				</Modal.Body>
 			</Modal> */}
-    </div>
-  );
+		</div>
+	);
 };

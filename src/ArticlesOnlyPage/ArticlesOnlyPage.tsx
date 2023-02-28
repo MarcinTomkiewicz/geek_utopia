@@ -11,14 +11,16 @@ export const ArticlesOnlyPage = ({
 	articleType,
 	defaultPostsOnPage,
 	currentTag
-}: ArticleType): any => {
+}: ArticleType): JSX.Element => {
 
-	const [filteredTag, setFilteredTag] = useState<string | undefined>(currentTag);
-	const [refresh, setRefresh] = useState<string[]>([])
+	const [filteredTag, setFilteredTag] = useState('');
 
 	useEffect(() => {
-		setRefresh([])
+		setFilteredTag(currentTag)
 	}, [currentTag])
+
+	console.log(`Filtered: ${filteredTag}`, `Current: ${currentTag}`);
+	
 
 	const articles = useGetArticles(articleType).filter(
 		(article: ArticleParameters) => article.is_online
@@ -47,10 +49,6 @@ export const ArticlesOnlyPage = ({
 	const paginate = ({ selected }: any) => {
 		setCurrentPage(selected + 1);
 	};
-
-	if (articles === undefined) {
-		return null;
-	}
 
 	const handlePostsOnPageChange = (e: any) => {
 		setPostsPerPage(e.target.value);

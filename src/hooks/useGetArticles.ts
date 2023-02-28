@@ -33,7 +33,6 @@ export const useGetArticles = (category?: string): any => {
       setArticlesList(sortedArticles);
     };
     getArticlesFromDB();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
   return articlesList;

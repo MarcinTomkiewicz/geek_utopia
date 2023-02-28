@@ -11,13 +11,13 @@ export interface TagsProps {
 }
 
 export interface ArticleType {
-  articleType?: string;
+  articleType: string;
   startFrom?: number;
   howMany?: number;
   id?: number;
   category?: string;
   defaultPostsOnPage?: number;
-  currentTag?: string;
+  currentTag: string;
 }
 
 export interface DispatchTypes {
@@ -28,9 +28,7 @@ export interface DispatchTypes {
 }
 
 export interface AddArticleProps {
-  isNewArticle: boolean;
-  articleType: string;
-  articleToAdd?: ArticleParameters;
+  categoryOfArticle: string;
 }
 
 export interface ShowUserProfileProps {

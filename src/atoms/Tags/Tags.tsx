@@ -1,4 +1,4 @@
-import { Badge, Button } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { TagsProps } from "../../utils/interfaces";
 import { badgeBackground } from "../../utils/utilsObjects";

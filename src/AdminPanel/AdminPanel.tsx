@@ -23,7 +23,7 @@ export const AdminPanel = () => {
         />
         <Route
           path="/edit_article"
-          element={<EditArticles articleType="news" />}
+          element={<EditArticles articleType="news" currentTag=''/>}
         />
       </Routes>
     </div>

@@ -1,21 +1,15 @@
-import { FirebaseApp } from "firebase/app";
 import {
   doc,
   DocumentData,
-  Firestore,
-  FirestoreDataConverter,
-  getDoc,
   onSnapshot,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState, Fragment } from "react";
-import { Badge } from "react-bootstrap";
 import { Tags } from "../atoms/Tags/Tags";
 import { db } from "../config/firebaseConfig";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { generateDate } from "../utils/generateDate";
 import { ArticleParameters, ArticleType } from "../utils/interfaces";
-import { badgeBackground, monthLabels } from "../utils/utilsObjects";
 
 export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
   const [articleForRating, setArticleForRating] = useState<DocumentData>();
@@ -40,10 +34,10 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
       if (articleForRating === undefined) {
         return;
       }
-      const ratings = articleForRating[`${articleType}_id_${id}`].rating;
+      const ratings = articleForRating[`${articleType}_id_${id}`]?.rating;
       const averageRatings =
-        ratings.reduce((partialSum: number, a: number) => partialSum + a, 0) /
-        ratings.length;
+        ratings?.reduce((partialSum: number, a: number) => partialSum + a, 0) /
+        ratings?.length;
       return setAverageRatingFromSnapshot(averageRatings);
     };
     calculateAverageRatingFromSnapshot();

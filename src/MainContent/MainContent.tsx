@@ -18,6 +18,9 @@ export const MainContent = () => {
   const news = useGetArticles("news");
   const articles = useGetArticles("articles");
 
+  console.log(articles);
+  
+
   return (
     <main className="pt-2 d-flex flex-row justify-content-between align-items-start gap-3">
       <aside className="d-flex flex-column justify-content-start w-25">
@@ -25,20 +28,20 @@ export const MainContent = () => {
           <LeftPanel />
         </div>
         <div className="side__content">
-        <ArticlesTab articleType="news" />  
+        <ArticlesTab articleType="news" currentTag=''/>  
         </div>
         <div className="side__content">
-        <ArticlesTab articleType="articles"/>
+        <ArticlesTab articleType="articles" currentTag=''/>
         </div>
       </aside>
       <div className="articles__content d-flex flex-column justify-content-start align-items-center w-75 pb-2 mb-3">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/news/" element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} />} />
+          <Route path="/news/" element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} currentTag=''/>} />
           {user?.is_admin ? <Route path="/admin/*" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
           {news.map((newsItem: ArticleParameters) => {
-            return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle articleType="news" id={newsItem?.id} />} />;
+            return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle articleType="news" id={newsItem?.id} currentTag=''/>} />;
           })}
           {news.map((newsItem: ArticleParameters) => {
             return newsItem.tags.map((tag: string) => {
@@ -46,7 +49,7 @@ export const MainContent = () => {
           })
           })}
           {articles.map((article: ArticleParameters) => {
-            return <Route path={`/news/${article.id}`} key={article.id} element={<ShowFullArticle articleType="articles" id={article?.id} />} />;
+            return <Route path={`/articles/${article.id}`} key={article.id} element={<ShowFullArticle articleType="articles" id={article.id} currentTag=''/>} />;
           })}
         </Routes>
       </div>
