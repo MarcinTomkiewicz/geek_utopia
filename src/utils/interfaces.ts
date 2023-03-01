@@ -47,9 +47,13 @@ export interface UserData {
   hobby: string;
 }
 
-export interface ArticleParameters {
+export interface SortingFunctionParameters {
+  id: number
+}
+
+export interface ArticleParameters extends SortingFunctionParameters{
+  type?: "news" | "article";
   category: string;
-  id: number;
   title: string;
   content: string;
   author: string;
@@ -64,11 +68,6 @@ export interface ArticleParameters {
   short_descr: string;
   databaseTitle: string;
 }
-
-// export interface Months {
-//   key: number;
-//   value: string;
-// }
 
 export interface Properties {
   input: string;
@@ -85,4 +84,9 @@ export interface Properties {
 export interface KeyValueInterface {
 	key: number,
 	value: string,
+}
+
+export interface CategoryInterface {
+  id: number;
+  category: string;
 }

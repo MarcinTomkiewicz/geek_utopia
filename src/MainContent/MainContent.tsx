@@ -18,9 +18,6 @@ export const MainContent = () => {
   const news = useGetArticles("news");
   const articles = useGetArticles("articles");
 
-  console.log(articles);
-  
-
   return (
     <main className="pt-2 d-flex flex-row justify-content-between align-items-start gap-3">
       <aside className="d-flex flex-column justify-content-start w-25">

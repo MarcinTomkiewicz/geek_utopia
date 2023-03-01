@@ -229,7 +229,7 @@ select:-webkit-autofill:focus {
 
 .dropdown-wrapper {
   position: relative;
-  width: 18%;
+  width: 10rem;
 }
 
 .button__dropdown {
@@ -306,7 +306,7 @@ select:-webkit-autofill:focus {
 }
 
 .dropdown__list.active {
-  height: 400%;
+  height: fit-content;
   overflow: hidden;
 }
 

@@ -94,9 +94,10 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
                 >
                   {article.short_descr}
                 </div>
-                {article.content.split("\n").map((paragraph: string) => {
+                {article.content.split("\n").map((paragraph: string, id: number) => {
                   return (
                     <div
+                      key={id}
                       className="text-left w-100 mb-2"
                       style={{ textAlign: "justify" }}
                     >

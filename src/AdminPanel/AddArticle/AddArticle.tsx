@@ -5,447 +5,260 @@ import { ChangeEvent, FormEvent, useEffect, useState, MouseEvent } from "react";
 import { Alert, Button, FloatingLabel, Form, Modal } from "react-bootstrap";
 import { TextInput } from "../../utils/TextInput";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { AddArticleProps, ArticleParameters } from "../../utils/interfaces";
+import { AddArticleProps, ArticleParameters, CategoryInterface } from "../../utils/interfaces";
 import { useGetCategories } from "../../hooks/useGetCategories";
 import { useHighestId } from "../../hooks/useHighestId";
 import { useGetArticles } from "../../hooks/useGetArticles";
+import { CategoryModal } from "../../Modals/CategoryModal";
+import { capitalizeFirstLetter } from "../../utils/helperFunctions";
 
 const currentDate = new Date();
 
 const initialParameters: ArticleParameters = {
-	category: "",
-	id: 0,
-	title: "",
-	content: "",
-	author: "",
-	date: Timestamp.fromDate(currentDate),
-	picture: "",
-	rating: [],
-	tags: [],
-	short_descr: "",
-	isOnline: false,
-	isAdult: false,
-	databaseTitle: "",
-};
-
-const capitalizeFirstLetter = (string: string) => {
-	return string.charAt(0).toUpperCase() + string.slice(1);
+  category: "",
+  id: 0,
+  title: "",
+  content: "",
+  author: "",
+  date: Timestamp.fromDate(currentDate),
+  picture: "",
+  rating: [],
+  tags: [],
+  short_descr: "",
+  isOnline: false,
+  isAdult: false,
+  databaseTitle: "",
 };
 
 type UserFile = {
-	file: File;
-	url: string;
+  file: File;
+  url: string;
 };
 
-export const AddArticle = ({
-	categoryOfArticle,
-}: AddArticleProps): JSX.Element => {
-	const user = useUser();
-	const categories = useGetCategories();
-  
-	const [success, setSuccess] = useState(false);
-	const [formError, setFormError] = useState(false);
-	const [error, setError] = useState("");
-  
-	const [userFile, setUserFile] = useState<UserFile | null>(null);
-	const [percent, setPercent] = useState(0);
-	const [openModal, setOpenModal] = useState(false);
-  
-	const [isNewsOrArticle, setIsNewsOrArticle] = useState(categoryOfArticle);
-	const [articleCategory, setArticleCategory] = useState<string[]>([""]);
+export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element => {
+  const user = useUser();
+  const categories = useGetCategories();  
+
+  const [success, setSuccess] = useState(false);
+  const [formError, setFormError] = useState(false);
+  const [error, setError] = useState("");
+
+  const [userFile, setUserFile] = useState<UserFile | null>(null);
+  const [percent, setPercent] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+
+  const [isNewsOrArticle, setIsNewsOrArticle] = useState(categoryOfArticle);
+  const [articleCategory, setArticleCategory] = useState<string[]>([""]);
   const articles = useGetArticles(categoryOfArticle);
 
-	const [data, setData] = useState<ArticleParameters>(initialParameters);
+  const [data, setData] = useState<ArticleParameters>(initialParameters);
 
-	const highestIdFromHook = useHighestId(data.category);
-	const [listOfCategories, setListOfCategories] = useState<string[]>([]);
+  const highestIdFromHook = useHighestId(isNewsOrArticle);
+  const [listOfCategories, setListOfCategories] = useState<string[]>([]);
 
-	const createListOfCategories = () => {
-		let articlesCategories: string[] = [];
-		articles.map((article: ArticleParameters) => {
-			articlesCategories.push(article.category);
-		});
-    
-		setListOfCategories(createListOfUniqueCategories(articlesCategories));
-	};
+  // Handle file upload event and update state
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
 
-	const createListOfUniqueCategories = (articlesCategories: string[]) => {
-    let uniqueCategories: string[] = []
-		articlesCategories.forEach((element) => {
-			if (!uniqueCategories?.includes(element)) {
-				if (element !== undefined) {
-					uniqueCategories.push(element);
-				}
-			}
-		});    
-		return uniqueCategories;
-	};
+    setUserFile({
+      url: URL.createObjectURL(e.target.files[0]),
+      file: e.target.files[0],
+    });
+  };
 
-	useEffect(() => {
-		createListOfCategories();
-	}, [articles]);
+  const handleUpload = async () => {
+    if (!userFile) return;
 
-	// Handle file upload event and update state
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files) return;
+    const storageRef = ref(storage, `/files/${data.id}/${userFile.file.name}`);
 
-		setUserFile({
-			url: URL.createObjectURL(e.target.files[0]),
-			file: e.target.files[0],
-		});
-	};
+    // progress can be paused and resumed. It also exposes progress updates.
+    // Receives the storage reference and the file to upload.
+    const uploadTask = uploadBytesResumable(storageRef, userFile.file);
 
-	const handleUpload = async () => {
-		if (!userFile) return;
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
 
-		const storageRef = ref(
-			storage,
-			`/files/${data.id}/${userFile.file.name}`
-		);
+        // update progress
+        setPercent(percent);
+      },
+      (err) => console.log(err),
+      () => {
+        // download url
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          setData({ ...data, picture: url });
+        });
+      }
+    );
+  };
 
-		// progress can be paused and resumed. It also exposes progress updates.
-		// Receives the storage reference and the file to upload.
-		const uploadTask = uploadBytesResumable(storageRef, userFile.file);
+  const addArticle = async (newArticleData: ArticleParameters) => {
+    await updateDoc(doc(db, "content", isNewsOrArticle), {
+      [newArticleData.databaseTitle]: {
+        category: newArticleData.category,
+        id: newArticleData.id,
+        title: newArticleData.title,
+        content: newArticleData.content,
+        author: newArticleData.author,
+        date: newArticleData.date,
+        picture: newArticleData.picture,
+        rating: newArticleData.rating,
+        short_descr: newArticleData.short_descr,
+        tags: newArticleData.tags,
+        is_online: newArticleData.isOnline,
+        is_adult: newArticleData.isAdult,
+      },
+    });
+  };
 
-		uploadTask.on(
-			"state_changed",
-			(snapshot) => {
-				const percent = Math.round(
-					(snapshot.bytesTransferred / snapshot.totalBytes) * 100
-				);
+  const handleSwitch = (e: ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, [e.target.name]: e.target.checked });
+  };
 
-				// update progress
-				setPercent(percent);
-			},
-			(err) => console.log(err),
-			() => {
-				// download url
-				getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-					setData({ ...data, picture: url });
-				});
-			}
-		);
-	};
+  const { category, id, title, content, author, date, picture, tags, short_descr, isOnline, isAdult } = data;
 
-	const addArticle = async (newArticleData: ArticleParameters) => {
-		await updateDoc(doc(db, "content", newArticleData.category), {
-			[newArticleData.databaseTitle]: {
-				category: newArticleData.category,
-				id: newArticleData.id,
-				title: newArticleData.title,
-				content: newArticleData.content,
-				author: newArticleData.author,
-				date: newArticleData.date,
-				picture: newArticleData.picture,
-				rating: newArticleData.rating,
-				short_descr: newArticleData.short_descr,
-				tags: newArticleData.tags,
-				is_online: newArticleData.isOnline,
-				is_adult: newArticleData.isAdult,
-			},
-		});
-	};
+  const resetForm = (e?: MouseEvent<HTMLElement>) => {
+    setData((prev: ArticleParameters) => ({
+      ...initialParameters,
+      type: isNewsOrArticle === "news" ? "news" : "article",
+      id: prev.id,
+      category: isNewsOrArticle === "news" ? "news" : categories[0]?.category,
+    }));
+    setUserFile(null);
+    if (e?.currentTarget.id === "cancel") {
+      setSuccess(false);
+    }
+  };
 
-	const handleSwitch = (e: ChangeEvent<HTMLInputElement>) => {
-		setData({ ...data, [e.target.name]: e.target.checked });
-	};
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!userFile) {
+      alert("Please upload an image first!");
+      return;
+    }
 
-	const {
-		category,
-		id,
-		title,
-		content,
-		author,
-		date,
-		picture,
-		tags,
-		short_descr,
-		isOnline,
-		isAdult,
-	} = data;
+    await handleUpload();
+    if (data.databaseTitle !== "" && data.picture !== "") {
+      try {
+        const response = await addArticle(data);
+        setSuccess(true);
+        resetForm();
+      } catch (err: any) {
+        console.error(err);
+        setFormError((prev) => !prev);
+        if (err instanceof Error) {
+          setError(err.message);
+        }
+      }
+    }
+  };
 
-	const resetForm = (e?: MouseEvent<HTMLElement>) => {
-		setData({
-			...initialParameters,
-			category: categoryOfArticle,
-			id: highestIdFromHook + 1,
-		});
-		setUserFile(null);
-		if (e?.currentTarget.id === "cancel") {
-			setSuccess(false);
-		}
-	};
+  const handleSelectCategory = (e: ChangeEvent<HTMLSelectElement>) => setData({...data, category: e.target.value});
 
-	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		if (!userFile) {
-			alert("Please upload an image first!");
-			return;
-		}
+  useEffect(() => {
+    setIsNewsOrArticle(categoryOfArticle);
+  }, [categoryOfArticle]);
 
-		await handleUpload();
-		if (data.databaseTitle !== "" && data.picture !== "") {
-			try {
-				const response = await addArticle(data);
-				setSuccess(true);
-				resetForm();
-			} catch (err: any) {
-				console.error(err);
-				setFormError((prev) => !prev);
-				if (err instanceof Error) {
-					setError(err.message);
-				}
-			}
-		}
-	};
+  useEffect(() => {
+    setData((prev) => ({
+      ...prev,
+      type: isNewsOrArticle === "news" ? "news" : "article",
+      id: highestIdFromHook + 1,
+      category: isNewsOrArticle === "news" ? "news" : categories[0]?.category,
+    }));
+  }, [isNewsOrArticle, highestIdFromHook, categories]);
 
-	const handleSelectCategory = (e: ChangeEvent<HTMLSelectElement>) =>
-		setIsNewsOrArticle(e.target.value);
-
-	useEffect(() => {
-		setIsNewsOrArticle(categoryOfArticle);
-	}, [categoryOfArticle]);
-
-	useEffect(() => {
-		setData((prev) => ({
-			...prev,
-			id: highestIdFromHook + 1,
-			category: isNewsOrArticle,
-		}));
-	}, [isNewsOrArticle, highestIdFromHook]);
-
-	return (
-		<div className="articles__content--wrapper">
-			{success ? (
-				<Alert
-					variant="success"
-					style={{ width: "80%", alignSelf: "center" }}
-				>
-					Artykuł "{data.title}" został pomyślnie dodany do bazy pod
-					id: {data.id}
-				</Alert>
-			) : (
-				""
-			)}
-			{formError ? (
-				<Alert variant="danger">
-					Artykuł "{data.title}" nie został dodany. Powód: {error}
-				</Alert>
-			) : (
-				""
-			)}
-			<h1 className="text-center mb-4">
-				Dodaj{" "}
-				{category === "news"
-					? capitalizeFirstLetter(category)
-					: `artykuł w kategorii: ${capitalizeFirstLetter(category)}`}
-			</h1>
-			<Form
-				style={{
-					width: "80%",
-					alignSelf: "center",
-					alignItems: "center",
-				}}
-				onSubmit={handleSubmit}
-			>
-				<div className="d-flex flex-row w-100 justify-content-between gap-3 align-items-center">
-					<FloatingLabel
-						controlId="floatingSelect"
-						label="Wybierz kategorię"
-						className="d-flex flex-grow-1 mb-3"
-					>
-						<Form.Select
-							onChange={handleSelectCategory}
-							size="sm"
-							aria-label="Kategoria artykułów"
-							className="form__control--input"
-							value={category}
-						>
-							{categories?.map((category: string) => {
-								return (
-									<option value={category} key={category}>
-										{capitalizeFirstLetter(category)}
-									</option>
-								);
-							})}
-						</Form.Select>
-					</FloatingLabel>
-					<Button
-						variant="primary"
-						onClick={() => setOpenModal(true)}
-					>
-						Dodaj kategorię artykułów
-					</Button>
-				</div>
-				<TextInput
-					input="Tytuł"
-					isRequired="true"
-					type="text"
-					name="title"
-					data={data}
-					setData={setData}
-				/>
-				<TextInput
-					input="Krótki opis"
-					isRequired="true"
-					type="text"
-					name="short_descr"
-					data={data}
-					setData={setData}
-					textarea
-					height={75}
-				/>
-				<TextInput
-					input="Treść"
-					isRequired="true"
-					type="text"
-					name="content"
-					data={data}
-					setData={setData}
-					textarea
-					height={200}
-				/>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-between",
-						alignItems: "center",
-					}}
-					className="pb-3"
-				>
-					<Form.Group controlId="formFile">
-						<Form.Label>Dodaj obrazek</Form.Label>
-						<Form.Control
-							className="form__control--input"
-							type="file"
-							accept="image/*"
-							onChange={handleChange}
-						/>
-					</Form.Group>
-					{userFile ? (
-						<img
-							src={userFile.url}
-							style={{ maxHeight: "200px" }}
-							alt=""
-						></img>
-					) : (
-						""
-					)}
-				</div>
-				<div className="d-flex flex-row justify-content-between align-items-center gap-5">
-					<TextInput
-						input="Data dodania"
-						isRequired="true"
-						disabled
-						type="text"
-						name="date"
-						data={data}
-						setData={setData}
-					/>
-					<TextInput
-						input="Tagi"
-						isRequired="true"
-						type="text"
-						name="tags"
-						data={data}
-						setData={setData}
-						textarea
-						height={100}
-					/>
-					<TextInput
-						input="ID Newsa"
-						isRequired="true"
-						disabled
-						type="number"
-						name="id"
-						data={data}
-						setData={setData}
-					/>
-				</div>
-				<div className="d-flex flex-row justify-content-between align-items-center gap-5">
-					<div className="d-flex flex-column justify-content-between align-items-start w-100">
-						<Form.Check
-							type="switch"
-							label="Opublikować?"
-							id="isOnline"
-							name="isOnline"
-							onChange={handleSwitch}
-							className="me-3"
-						></Form.Check>
-						<Form.Check
-							type="switch"
-							label="Tylko dla dorosłych?"
-							id="isAdult"
-							name="isAdult"
-							onChange={handleSwitch}
-							className="mb-3 me-3"
-						></Form.Check>
-					</div>
-					<TextInput
-						input="Autor"
-						isRequired="true"
-						disabled
-						type="text"
-						name="author"
-						data={data}
-						setData={setData}
-					/>
-					<TextInput
-						input="Nazwa w bazie"
-						isRequired="true"
-						disabled
-						type="text"
-						name="databaseTitle"
-						data={data}
-						setData={setData}
-					/>
-				</div>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-around",
-						alignItems: "center",
-					}}
-				>
-					<Button variant="info" type="submit">
-						Zapisz dane
-					</Button>
-					<Button
-						variant="warning"
-						type="reset"
-						onClick={resetForm}
-						id="cancel"
-					>
-						Wyczyść formularz
-					</Button>
-				</div>
-			</Form>
-			{/* <Modal
-				size="lg"
-				show={() => {return setOpenModal(true)}}
-				onHide={() => setOpenModal(false)}
-				centered
-				style={{
-					display: "flex",
-					alignItems: "center",
-					flexDirection: "column",
-					justifyContent: "flex-start",
-					marginTop: "1.5em",
-				}}
-			>
-				<Modal.Header
-					closeButton
-					closeVariant="white"
-					style={{ backgroundColor: "rgba(161, 14, 184)" }}
-				>
-					<Modal.Title>Dodaj kategorię</Modal.Title>
-				</Modal.Header>
-				<Modal.Body style={{ backgroundColor: "rgba(0, 0, 0)" }}>
-					<TextInput 
-				</Modal.Body>
-			</Modal> */}
-		</div>
-	);
+  return (
+    <div className="articles__content--wrapper">
+      {success ? (
+        <Alert variant="success" style={{ width: "80%", alignSelf: "center" }}>
+          Artykuł "{data.title}" został pomyślnie dodany do bazy pod id: {data.id}
+        </Alert>
+      ) : (
+        ""
+      )}
+      {formError ? (
+        <Alert variant="danger">
+          Artykuł "{data.title}" nie został dodany. Powód: {error}
+        </Alert>
+      ) : (
+        ""
+      )}
+      <h1 className="text-center mb-4">Dodaj {category === "news" ? "Newsa" : `artykuł w kategorii: ${capitalizeFirstLetter(category)}`}</h1>
+      <Form
+        style={{
+          width: "80%",
+          alignSelf: "center",
+          alignItems: "center",
+        }}
+        onSubmit={handleSubmit}>
+        {categoryOfArticle === "articles" ? (
+          <div className="d-flex flex-row w-100 justify-content-between gap-3 align-items-center">
+            <FloatingLabel controlId="floatingSelect" label="Wybierz kategorię" className="d-flex flex-grow-1 mb-3">
+              <Form.Select onChange={handleSelectCategory} size="sm" aria-label="Kategoria artykułów" className="form__control--input" value={category}>
+                {categories?.map((category: CategoryInterface) => {
+                  return (
+                    <option value={category?.category} key={category?.id}>
+                      {capitalizeFirstLetter(category.category)}
+                    </option>
+                  );
+                })}
+              </Form.Select>
+            </FloatingLabel>
+            <Button variant="primary" onClick={() => setOpenModal(true)}>
+              Dodaj kategorię artykułów
+            </Button>
+          </div>
+        ) : (
+          ""
+        )}
+        <TextInput input="Tytuł" isRequired="true" type="text" name="title" data={data} setData={setData} />
+        <TextInput input="Krótki opis" isRequired="true" type="text" name="short_descr" data={data} setData={setData} textarea height={75} />
+        <TextInput input="Treść" isRequired="true" type="text" name="content" data={data} setData={setData} textarea height={200} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          className="pb-3">
+          <Form.Group controlId="formFile">
+            <Form.Label>Dodaj obrazek</Form.Label>
+            <Form.Control className="form__control--input" type="file" accept="image/*" onChange={handleChange} />
+          </Form.Group>
+          {userFile ? <img src={userFile.url} style={{ maxHeight: "200px" }} alt=""></img> : ""}
+        </div>
+        <div className="d-flex flex-row justify-content-between align-items-center gap-5">
+          <TextInput input="Data dodania" isRequired="true" disabled type="text" name="date" data={data} setData={setData} />
+          <TextInput input="Tagi" isRequired="true" type="text" name="tags" data={data} setData={setData} textarea height={100} />
+          <TextInput input="ID Newsa" isRequired="true" disabled type="number" name="id" data={data} setData={setData} />
+        </div>
+        <div className="d-flex flex-row justify-content-between align-items-center gap-5">
+          <div className="d-flex flex-column justify-content-between align-items-start w-100">
+            <Form.Check type="switch" label="Opublikować?" id="isOnline" name="isOnline" onChange={handleSwitch} className="me-3"></Form.Check>
+            <Form.Check type="switch" label="Tylko dla dorosłych?" id="isAdult" name="isAdult" onChange={handleSwitch} className="mb-3 me-3"></Form.Check>
+          </div>
+          <TextInput input="Autor" isRequired="true" disabled type="text" name="author" data={data} setData={setData} />
+          <TextInput input="Nazwa w bazie" isRequired="true" disabled type="text" name="databaseTitle" data={data} setData={setData} />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+          }}>
+          <Button variant="info" type="submit">
+            Zapisz dane
+          </Button>
+          <Button variant="warning" type="reset" onClick={resetForm} id="cancel">
+            Wyczyść formularz
+          </Button>
+        </div>
+      </Form>
+		  {openModal ? <CategoryModal setOpenModal={setOpenModal} openModal={openModal}/> : ''}
+    </div>
+  );
 };

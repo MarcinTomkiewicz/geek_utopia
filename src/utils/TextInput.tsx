@@ -4,17 +4,7 @@ import Form from "react-bootstrap/Form";
 import { useUser } from "../hooks/useUser";
 import { Properties } from "./interfaces";
 
-export const TextInput = ({
-  input,
-  isRequired,
-  type,
-  name,
-  data,
-  setData,
-  textarea,
-  disabled,
-  height,
-}: Properties) => {
+export const TextInput = ({ input, isRequired, type, name, data, setData, textarea, disabled, height }: Properties) => {
   const user = useUser();
 
   const [tags, setTags] = useState<string[]>([]);
@@ -23,11 +13,7 @@ export const TextInput = ({
   useEffect(() => {
     switch (name) {
       case "date":
-        setValue(
-          data.date.toDate().toLocaleString() +
-            "." +
-            data.date.toDate().getMilliseconds()
-        );
+        setValue(data.date.toDate().toLocaleString() + "." + data.date.toDate().getMilliseconds());
         break;
       case "id":
         setValue(data.id);
@@ -40,6 +26,9 @@ export const TextInput = ({
         break;
       case "tags":
         setValue(data.tags.join("\n"));
+        break;
+      case "id":
+        setValue(data.id);
         break;
       default:
         setValue(data[name]);
@@ -60,22 +49,14 @@ export const TextInput = ({
     data.author = user?.name;
   }
   if (name === "databaseTitle") {
-    data.databaseTitle = `${data.category}_id_${data.id}`;
+    data.databaseTitle = `${data.type}_id_${data.id}`;
   }
 
   return (
-    <FloatingLabel
-      label={`${input}${isRequired === "true" ? "*" : " (opcjonalnie)"}`}
-      className="d-flex mb-3 w-100"
-      style={{ fontSize: "0.75rem" }}
-    >
+    <FloatingLabel label={`${input}${isRequired === "true" ? "*" : " (opcjonalnie)"}`} className="d-flex mb-3 w-100" style={{ fontSize: "0.75rem" }}>
       <Form.Control
         as={textarea ? "textarea" : "input"}
-        style={
-          textarea
-            ? { height: height, fontSize: "1rem" }
-            : { height: "45px", fontSize: "12px" }
-        }
+        style={textarea ? { height: height, fontSize: "1rem" } : { height: "45px", fontSize: "12px" }}
         className="form__control--input"
         type={type}
         placeholder={`${name}${isRequired === "true" ? "*" : " (opcjonalnie)"}`}

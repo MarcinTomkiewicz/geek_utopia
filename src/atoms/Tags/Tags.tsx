@@ -1,9 +1,12 @@
 import { Badge } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TagsProps } from "../../utils/interfaces";
 import { badgeBackground } from "../../utils/utilsObjects";
 
 export const Tags = ({ article, variant, filteredTag, setFilteredTag, isFromOnlyPageComponent }: TagsProps) => {
+  const navigate = useNavigate();
+	const location = useLocation();
+  
   const handleTagClick = (e: any) => {
     setFilteredTag(e.target.title);
   };
