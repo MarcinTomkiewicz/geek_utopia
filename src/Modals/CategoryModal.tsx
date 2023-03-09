@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { TextInput } from "../utils/TextInput";
 import { useHighestId } from "../hooks/useHighestId";
-import { CategoryInterface } from "../utils/interfaces";
+import { CategoryInterface, ModalProps } from "../utils/interfaces";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
-export const CategoryModal = ({ setOpenModal, openModal }: any): any => {
+export const CategoryModal = ({ setOpenModal, openModal }: ModalProps): JSX.Element => {
   const categoriesIds = useHighestId("categories");
   const [category, setCategory] = useState<CategoryInterface>({ category: "", id: 0 });
 

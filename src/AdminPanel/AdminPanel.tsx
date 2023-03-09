@@ -5,7 +5,7 @@ import { AddArticle } from "./AddArticle/AddArticle";
 import { EditArticles } from "./EditArticles/EditArticles";
 import { useState } from "react";
 
-export const AdminPanel = () => {
+export const AdminPanel = (): JSX.Element => {
   const [category, setCategory] = useState<string>("");
   return (
     <div className="d-flex pe-3 pt-4 flex-column w-100 flex-wrap">

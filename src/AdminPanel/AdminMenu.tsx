@@ -10,7 +10,7 @@ const menuItems = [
   // { link: "", descr: "Dodaj artykuł" },
 ];
 
-export const AdminMenu = () => {
+export const AdminMenu = (): JSX.Element => {
   return (
     <ul
       className="d-flex flex-row justify-content-start align-items-center gap-4 m-0"

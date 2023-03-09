@@ -10,7 +10,7 @@ import { useIsTabActive } from "../hooks/useIsTabActive";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
-export const TopMenu = () => {
+export const TopMenu = (): JSX.Element => {
   const user = useUser();
   const language = useLanguagePacks();
   const langCode = useLanguageSettings();

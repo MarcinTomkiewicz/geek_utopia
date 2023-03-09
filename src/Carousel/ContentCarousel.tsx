@@ -18,7 +18,7 @@ export const ContentCarousel = ({ articleType }: ArticleType): JSX.Element | nul
   return (
     <>
       <Carousel infiniteLoop centerMode centerSlidePercentage={80} showArrows showThumbs={false} autoPlay stopOnHover swipeable dynamicHeight={false} showIndicators={false} transitionTime={1000} statusFormatter={(current, total) => ``}>
-        {articlesToShowInCarousel.map((article: ArticleParameters): any => {
+        {articlesToShowInCarousel.map((article: ArticleParameters): JSX.Element => {
           return (
             <div key={article?.id}>
               <img src={article?.picture} />

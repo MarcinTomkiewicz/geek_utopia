@@ -35,6 +35,11 @@ export interface ShowUserProfileProps {
   isInLeftPanel: boolean;
 }
 
+export interface ModalProps {
+  setOpenModal: (openModal: boolean) => SetStateAction<boolean>; 
+  openModal: boolean
+}
+
 //DATA INTERFACES
 export interface UserData {
   mail: string;

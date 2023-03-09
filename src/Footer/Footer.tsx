@@ -1,4 +1,4 @@
-export const Footer = () => {
+export const Footer = (): JSX.Element => {
   return (
     <div className="footer">
       <div>Geek Utopia jest nieoficjalną i niekomercyjną stroną poświęconą popkulturze, fantastyce i wszystkiemu, co geeki lubią najbardziej. </div>

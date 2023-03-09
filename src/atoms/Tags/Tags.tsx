@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TagsProps } from "../../utils/interfaces";
 import { badgeBackground } from "../../utils/utilsObjects";
 
-export const Tags = ({ article, variant, filteredTag, setFilteredTag, isFromOnlyPageComponent }: TagsProps) => {
+export const Tags = ({ article, variant, filteredTag, setFilteredTag, isFromOnlyPageComponent }: TagsProps): JSX.Element => {
   const navigate = useNavigate();
 	const location = useLocation();
   
