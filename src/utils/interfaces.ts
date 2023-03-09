@@ -35,6 +35,10 @@ export interface ShowUserProfileProps {
   isInLeftPanel: boolean;
 }
 
+export interface BusyBoxProps {
+  size?: number
+}
+
 //DATA INTERFACES
 export interface UserData {
   mail: string;

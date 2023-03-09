@@ -6,6 +6,7 @@ import { Logout } from "../LoginAndRegistration/Logout";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
 import { ShowUserProfile } from "../UserProfile/ShowUserProfile";
+import { BusyBox } from "../utils/BusyBox";
 
 const LeftPanel: FunctionComponent = () => {
   const user = useUser();
@@ -48,7 +49,7 @@ const LeftPanel: FunctionComponent = () => {
         </div>
       );
     }
-    if (user === null && panelChanger === "login") {
+    else if (user === null && panelChanger === "login") {
       return (
         <div
           style={{
@@ -73,7 +74,7 @@ const LeftPanel: FunctionComponent = () => {
   return (
     <>
       {leftPanel}
-      {determinePanels()}
+      {language.labels === undefined ? '' : determinePanels()}
     </>
   );
 };
