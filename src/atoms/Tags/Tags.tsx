@@ -8,8 +8,8 @@ export const Tags = ({ article, variant, filteredTag, setFilteredTag, isFromOnly
 	const location = useLocation();
   
   const handleTagClick = (e: any) => {
-    setFilteredTag(e.target.title);
-  };
+    if (setFilteredTag) setFilteredTag(e.target.title);
+  };  
 
   const setNavigation = (tag: string) => {	
     if (isFromOnlyPageComponent) {
@@ -20,7 +20,7 @@ export const Tags = ({ article, variant, filteredTag, setFilteredTag, isFromOnly
       );
     } else {
       return (		
-        <Link to={`/news/${tag}`}>
+        <Link to={`/${article?.category ? "articles" : "news"}/${tag}`}>
           <Badge bg={badgeBackground[Math.floor(Math.random() * badgeBackground.length)]}>
             {tag}
           </Badge>

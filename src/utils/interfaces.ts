@@ -36,7 +36,7 @@ export interface ShowUserProfileProps {
 }
 
 export interface ModalProps {
-  setOpenModal: (openModal: boolean) => SetStateAction<boolean>; 
+  setOpenModal: (openModal: boolean) => void; 
   openModal: boolean
 }
 

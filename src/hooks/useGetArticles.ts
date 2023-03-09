@@ -10,8 +10,6 @@ export const useGetArticles = (category?: string): any => {
   useEffect(() => {
     const getArticlesFromDB = async () => {
       if (!category) return;
-      // const docRef = doc(db, "content", category);
-      // const docSnap = await getDoc(docRef);
 
       return onSnapshot(doc(db, "content", category), (doc) => {
         const dataObj = doc.data();

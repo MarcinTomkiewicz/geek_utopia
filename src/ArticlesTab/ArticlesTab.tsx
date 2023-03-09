@@ -9,9 +9,11 @@ import { useLanguageSettings } from "../hooks/useLanguageSettings";
 import { useEffect, useState } from "react";
 import { Tags } from "../atoms/Tags/Tags";
 import { generateDate } from "../utils/generateDate";
+import { BusyBox } from "../utils/BusyBox";
 
 export const ArticlesTab = ({
   articleType,
+  howMany
 }: ArticleType): JSX.Element | null => {
   const [articleForRating, setArticleForRating] = useState<DocumentData>();
 
@@ -49,14 +51,16 @@ export const ArticlesTab = ({
   const articles = useGetArticles(articleType).filter(
     (article: ArticleParameters) => article.is_online
   );
-  const articlesToShowOnList = articles.slice(0, 10);
+  const articlesToShowOnList = articles.slice(0, howMany);
 
   return (
     <div className="aside__content">
       <h2 className="text-center">
         {language.headers?.[articleType ? articleType : 0][langCode]}
       </h2>
-      {articlesToShowOnList.map((article: ArticleParameters) => {
+      {articlesToShowOnList.length === 0 ? (
+        <BusyBox />
+      ) : ( articlesToShowOnList.map((article: ArticleParameters) => {
         const linkToNavigate = `/${articleType}/${article.id}`;
         return (
           <div key={article.id} className="d-flex flex-column gap-2 w-100">
@@ -143,7 +147,7 @@ export const ArticlesTab = ({
             </div>
           </div>
         );
-      })}
+      }))}
     </div>
   );
 };

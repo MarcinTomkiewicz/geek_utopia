@@ -4,6 +4,7 @@ import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
 import { CategoryInterface } from "./interfaces";
 import { capitalizeFirstLetter } from "./helperFunctions"
+import { Link } from "react-router-dom";
 
 export const DropdownMenu = forwardRef<any, any>(({ showDropdown, setShowDropdown }: any, ref) => {
   const language = useLanguagePacks();
@@ -12,14 +13,14 @@ export const DropdownMenu = forwardRef<any, any>(({ showDropdown, setShowDropdow
 
   return (
     <div className="dropdown-wrapper">
-      <button ref={ref} onClick={setShowDropdown} className="button__dropdown">
+      <button onClick={setShowDropdown} className="button__dropdown">
       <span data-content={`${language.headers?.categories[langCode]}`} className="fancy__text">
               {language.headers?.categories[langCode]}
             </span>
       </button>
-      <ul className={`dropdown__list ${showDropdown ? "active" : ""}`}>
+      <ul className={`dropdown__list ${showDropdown ? "active" : ""}`} ref={ref}>
         {categories.map((category: CategoryInterface, i: number) => (
-          <li key={i}>{category?.category === "horror" ? "Horror [18+]" : capitalizeFirstLetter(category?.category)}</li>
+          <Link to={`articles/${category.category.toLowerCase()}`} className="general__text" key={i} style={{cursor: "pointer"}}><li key={i}>{category?.category === "horror" ? "Horror [18+]" : capitalizeFirstLetter(category?.category)}</li></Link>
         ))}
       </ul>
     </div>

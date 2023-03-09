@@ -21,7 +21,6 @@ export const useGetCategories = (): CategoryInterface[] => {
         convertToArray.forEach((document) => {
           dataFromDB.push(document);
         });
-        console.log(dataFromDB.sort(compareIdsForSorting));
         
         const sortedCategories = dataFromDB.sort(compareIdsForSorting).reverse();
         setAllCategories(sortedCategories);

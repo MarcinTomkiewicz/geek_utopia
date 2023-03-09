@@ -598,7 +598,7 @@ select:-webkit-autofill:focus {
   max-width: 180px;
   object-fit: cover;
   opacity: 0.3;
-  position: relative
+  position: relative;
 }
 
 .photo__text {
@@ -614,17 +614,17 @@ select:-webkit-autofill:focus {
 
 .spinning {
   animation-name: spin;
-  animation-duration: 5000ms;
+  animation-duration: 3500ms;
   animation-iteration-count: infinite;
-  animation-timing-function: linear; 
+  animation-timing-function: linear;
 }
 
 @keyframes spin {
   from {
-      transform:rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-      transform:rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
