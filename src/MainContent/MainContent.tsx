@@ -35,7 +35,7 @@ export const MainContent = () => {
         </div>
       </aside>
       <div className="d-flex flex-column justify-content-start align-items-center gap-1 w-75">
-        <div className="articles__content d-flex flex-column justify-content-start align-items-center pb-2 mb-3">
+        <div className="articles__content d-flex flex-column justify-content-start align-items-center pb-2 mb-3 w-100">
           <Routes>
             <Route
               path="/"

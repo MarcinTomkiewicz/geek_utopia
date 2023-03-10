@@ -14,6 +14,7 @@ export const ContentCarousel = ({ articleType }: ArticleType): JSX.Element | nul
 
   return (
     <>
+    <h2 className="d-flex align-self-center">Ostatnie {articleType === "news" ? "newsy" : "artykuły"}</h2>
       {articlesToShowInCarousel.length === 0 ? (
         <BusyBox />
       ) : (

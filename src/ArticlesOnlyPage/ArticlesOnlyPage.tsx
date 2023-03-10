@@ -81,7 +81,9 @@ export const ArticlesOnlyPage = ({ articleType, defaultPostsOnPage, currentTag, 
         ""
       )}
       {articles.length === 0 ? (
+        <div className="d-flex flex-column gap-2 w-100">
         <BusyBox />
+        </div>
       ) : (
         <div className="d-flex flex-column gap-2 w-100">
           <div className="d-flex justify-content-between align-items-center flex-column w-100 mb-3 p-2 article__list no--opacity" key={articles[0]?.id}>

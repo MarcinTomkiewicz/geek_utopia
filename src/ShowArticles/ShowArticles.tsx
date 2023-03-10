@@ -4,6 +4,7 @@ import { Tags } from "../atoms/Tags/Tags";
 import { useGetArticles } from "../hooks/useGetArticles";
 import { BusyBox } from "../utils/BusyBox";
 import { generateDate } from "../utils/generateDate";
+import { capitalizeFirstLetter } from "../utils/helperFunctions";
 import { ArticleParameters, ArticleType } from "../utils/interfaces";
 
 export const ShowArticles = ({ articleType, startFrom, howMany }: ArticleType): JSX.Element | null => {
@@ -16,6 +17,7 @@ export const ShowArticles = ({ articleType, startFrom, howMany }: ArticleType): 
 
   return (
     <>
+      <h2 className="d-flex align-self-center">Pozostałe {articleType === "news" ? "newsy" : "artykuły"}</h2>
       {articlesToShowOnList.length === 0 ? (
         <BusyBox />
       ) : (
@@ -43,9 +45,10 @@ export const ShowArticles = ({ articleType, startFrom, howMany }: ArticleType): 
                         ""
                       )}
                     </div>
-                    <div className="d-flex justify-content-between align-items-center flex-row w-100 mb-3">
+                    <div className="d-flex justify-content-between align-items-center flex-row w-100 mb-1">
                       <div style={{ fontSize: "0.75rem" }}>{generateDate(article)}</div>
                     </div>
+					{article.category !== undefined || article.category === "news" ? <div>{capitalizeFirstLetter(article.category)}</div> : ''}
                     <Tags article={article} />
                     <div>
                       {article?.short_descr === undefined || article?.short_descr === "" ? article?.content.substring(0, 500) : article?.short_descr}

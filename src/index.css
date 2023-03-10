@@ -310,6 +310,11 @@ select:-webkit-autofill:focus {
   overflow: hidden;
 }
 
+.dropdown__menu--item:hover {
+/* text-decoration: underline; */
+background-color: #723194;
+}
+
 .fancy__text {
   position: relative;
   display: inline-block;
@@ -594,22 +599,10 @@ select:-webkit-autofill:focus {
 .avatar {
   float: left;
   border-radius: 10px;
-  border: 2px white solid;
+  border: 1px white solid;
   max-width: 180px;
   object-fit: cover;
-  opacity: 0.3;
   position: relative;
-}
-
-.photo__text {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-45deg);
-  letter-spacing: 0.7rem;
-  font-size: 1rem;
-  text-align: center;
-  width: 100%;
 }
 
 .spinning {
@@ -627,6 +620,72 @@ select:-webkit-autofill:focus {
     transform: rotate(360deg);
   }
 }
+
+/* .blob {
+  background: black;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
+  margin: 10px;
+  height: 20px;
+  width: 20px;
+  transform: scale(1);
+  animation: pulse-black 2s infinite;
+} */
+
+.pulse__red  {
+  background: rgb(254, 34, 34);
+  box-shadow: 0 0 0 0 rgba(254, 34, 34, 1);
+  animation: pulse-red 2s infinite;
+  height: 1rem;
+  width: 1rem;
+  transform: scale(1);
+  border-radius: 50%;
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(254, 34, 34, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(254, 34, 34, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(254, 34, 34, 0);
+  }
+}
+
+.pulse__green {
+  background: rgba(51, 217, 178, 1);
+  box-shadow: 0 0 0 0 rgba(51, 217, 178, 1);
+  animation: pulse-green 2s infinite;
+  height: 1rem;
+  width: 1rem;
+  transform: scale(1);
+  border-radius: 50%;
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(51, 217, 178, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(51, 217, 178, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(51, 217, 178, 0);
+  }
+}
+
 
 @media screen and (max-width: 800px) {
   form,
