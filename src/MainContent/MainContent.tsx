@@ -80,6 +80,7 @@ export const MainContent = () => {
         </div>
         <div className="articles__content d-flex flex-column justify-content-start align-items-center pb-2 mb-3">
         <ShowArticles articleType="news" startFrom={1} howMany={10} currentTag=""/>
+        <ShowArticles articleType="articles" startFrom={1} howMany={10} currentTag=""/>
         </div>
       </div>
     </main>
