@@ -81,9 +81,7 @@ export const ArticlesOnlyPage = ({ articleType, defaultPostsOnPage, currentTag, 
         ""
       )}
       {articles.length === 0 ? (
-        <div className="d-flex flex-column gap-2 w-100">
         <BusyBox />
-        </div>
       ) : (
         <div className="d-flex flex-column gap-2 w-100">
           <div className="d-flex justify-content-between align-items-center flex-column w-100 mb-3 p-2 article__list no--opacity" key={articles[0]?.id}>
@@ -93,7 +91,7 @@ export const ArticlesOnlyPage = ({ articleType, defaultPostsOnPage, currentTag, 
               </Link>
             </div>
             <div className="d-flex mt-2 justify-content-start align-items-start flex-column w-100 h-100">
-              <Link to={`/news/${articles[0]?.id}`} className="general__text" style={{ cursor: "pointer" }}>
+              <Link to={`/${articleType}/${articles[0]?.id}`} className="general__text" style={{ cursor: "pointer" }}>
                 <div className="d-flex align-items-center flex-row w-100">
                   <h2 style={{ marginBottom: "0" }}>{articles[0]?.title} </h2>
                   {articles[0]?.is_adult ? (

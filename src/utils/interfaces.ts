@@ -29,6 +29,7 @@ export interface DispatchTypes {
 
 export interface AddArticleProps {
   categoryOfArticle: string;
+  dataToEdit?: ArticleParameters;
 }
 
 export interface ShowUserProfileProps {

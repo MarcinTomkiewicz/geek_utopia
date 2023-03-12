@@ -1,17 +1,20 @@
 import { deleteDoc, deleteField, doc, DocumentData, onSnapshot, updateDoc } from "firebase/firestore";
 import { useState } from "react";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { db } from "../../config/firebaseConfig";
 import { useGetArticles } from "../../hooks/useGetArticles";
 import ReactPaginate from "react-paginate";
 import { ArticleParameters, ArticleType } from "../../utils/interfaces";
 import { Tags } from "../../atoms/Tags/Tags";
 import { generateDate } from "../../utils/generateDate";
+import { Link } from "react-router-dom";
 
 export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [modal, setModal] = useState<ArticleParameters>();
   const articles = useGetArticles(articleType);
+
+  const [confirm, setConfirm] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
@@ -24,10 +27,24 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
     setCurrentPage(selected + 1);
   };
 
+  const handleConfirmation = (e: any) => {
+    e.preventDefault();
+    setConfirm(true);
+  };
+
   const deleteItem = async (e: any) => {
     if (articleType === undefined) {
       return;
     }
+
+    // <Confirm onConfirm={handleConfirmation} body="Czy chcesz usunąć artykuł? Tej operacji nie można cofnąć!" confirmText="Usuwanie artykułu" title="Usuwanie artykułu">
+    //   <Button variant="danger">Dodaj bez publikacji</Button>
+    // </Confirm>;
+
+    if (!confirm) {
+      return;
+    }
+
     const fieldName = e.target.name;
 
     await updateDoc(doc(db, "content", articleType), {
@@ -56,14 +73,14 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
                   borderRadius: "20px",
                   cursor: "pointer",
                   minHeight: "120px",
-                }}
-                onClick={() => openModal(article)}>
+                }}>
                 <div
                   className="d-flex align-items-center justify-content-center text-center"
                   style={{
                     borderRight: "white 1px solid",
                     width: "20%",
-                  }}>
+                  }}
+                  onClick={() => openModal(article)}>
                   <img
                     src={article.picture}
                     className="articles__image d-flex align-self-center"
@@ -79,7 +96,8 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
                     borderLeft: "white 1px solid",
                     borderRight: "white 1px solid",
                     width: "20%",
-                  }}>
+                  }}
+                  onClick={() => openModal(article)}>
                   <div style={{ fontWeight: "bold" }}>{article.title}</div>
                 </div>
                 <div
@@ -88,7 +106,8 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
                     borderLeft: "white 1px solid",
                     borderRight: "white 1px solid",
                     width: "70%",
-                  }}>
+                  }}
+                  onClick={() => openModal(article)}>
                   <div>{article.short_descr}</div>
                 </div>
                 <div
@@ -102,10 +121,16 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
                   }}>
                   <div>
                     <button className="logon" name={`${articleType}_id_${article.id}`}>
-                      Edytuj
+                      <Link to={`/admin/edit_${articleType}/${article.id}`} className="general__text">
+                        <span data-content="Edytuj" className="fancy__text align-middle">
+                          Edytuj
+                        </span>
+                      </Link>
                     </button>
-                    <button onClick={deleteItem} className="logon" name={`${articleType}_id_${article.id}`}>
-                      Usuń
+                    <button onClick={deleteItem} className="logon" name={`${articleType === "articles" ? "article" : "news"}_id_${article.id}`}>
+                      <span data-content="Usuń" className="fancy__text align-middle">
+                        Usuń
+                      </span>
                     </button>
                   </div>
                 </div>

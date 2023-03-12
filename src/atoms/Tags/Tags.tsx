@@ -20,7 +20,7 @@ export const Tags = ({ article, variant, filteredTag, setFilteredTag, isFromOnly
       );
     } else {
       return (		
-        <Link to={`/${article?.category ? "articles" : "news"}/${tag}`}>
+        <Link to={`/${article && article?.category === "news" || article?.category === undefined ? "news" : "articles"}/${tag}`}>
           <Badge bg={badgeBackground[Math.floor(Math.random() * badgeBackground.length)]}>
             {tag}
           </Badge>

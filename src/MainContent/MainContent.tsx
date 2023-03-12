@@ -44,43 +44,107 @@ export const MainContent = () => {
                 return <BusyBox />;
               }}
             />
-            <Route path="/about" element={<About />} />
-            <Route path="/news/" element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} currentTag="" />} />
-            <Route path="/articles/" element={<ArticlesOnlyPage articleType="articles" defaultPostsOnPage={20} currentTag="" />} />
+            <Route
+              path="/about"
+              element={<About />}
+              loader={async () => {
+                return <BusyBox />;
+              }}
+            />
+            <Route
+              path="/news/"
+              element={<ArticlesOnlyPage articleType="news" defaultPostsOnPage={20} currentTag="" />}
+              loader={async () => {
+                return <BusyBox />;
+              }}
+            />
+            <Route
+              path="/articles/"
+              element={<ArticlesOnlyPage articleType="articles" defaultPostsOnPage={20} currentTag="" />}
+              loader={async () => {
+                return <BusyBox />;
+              }}
+            />
             {categories.map((category, i) => {
-              return <Route path={`/articles/${category.category.toLowerCase()}`} key={i} element={<ArticlesOnlyPage articleType="articles" defaultPostsOnPage={20} currentTag="" category={category.category} />} />;
+              return (
+                <Route
+                  path={`/articles/${category.category.toLowerCase()}`}
+                  key={i}
+                  element={<ArticlesOnlyPage articleType="articles" defaultPostsOnPage={20} currentTag="" category={category.category} />}
+                  loader={async () => {
+                    return <BusyBox />;
+                  }}
+                />
+              );
             })}
-            {user?.is_admin ? <Route path="/admin/*" element={<AdminPanel />} /> : <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />}
+            {user?.is_admin ? (
+              <Route
+                path="/admin/*"
+                element={<AdminPanel />}
+                loader={async () => {
+                  return <BusyBox />;
+                }}
+              />
+            ) : (
+              <Route path="/admin" element="Nie masz wystarczających uprawnień, aby tu wejść" />
+            )}
             {news.map((newsItem: ArticleParameters) => {
-              return <Route path={`/news/${newsItem.id}`} key={newsItem.id} element={<ShowFullArticle articleType="news" id={newsItem?.id} currentTag="" />} />;
+              return (
+                <Route
+                  path={`/news/${newsItem.id}`}
+                  key={newsItem.id}
+                  element={<ShowFullArticle articleType="news" id={newsItem?.id} currentTag="" />}
+                  loader={async () => {
+                    return <BusyBox />;
+                  }}
+                />
+              );
             })}
             {news.map((newsItem: ArticleParameters) => {
               return newsItem.tags.map((tag: string) => {
                 return (
                   <Route
                     path={`/news/${tag}`}
+                    key={newsItem.id}
+                    element={<ArticlesOnlyPage articleType="news" currentTag={tag} defaultPostsOnPage={20} />}
                     loader={async () => {
                       return <BusyBox />;
                     }}
-                    key={newsItem.id}
-                    element={<ArticlesOnlyPage articleType="news" currentTag={tag} defaultPostsOnPage={20} />}
                   />
                 );
               });
             })}
             {articles.map((article: ArticleParameters) => {
-              return <Route path={`/articles/${article.id}`} key={article.id} element={<ShowFullArticle articleType="articles" id={article.id} currentTag="" />} />;
+              return (
+                <Route
+                  path={`/articles/${article.id}`}
+                  key={article.id}
+                  element={<ShowFullArticle articleType="articles" id={article.id} currentTag="" />}
+                  loader={async () => {
+                    return <BusyBox />;
+                  }}
+                />
+              );
             })}
             {articles.map((articleItem: ArticleParameters) => {
               return articleItem.tags.map((tag: string) => {
-                return <Route path={`/articles/${tag}`} key={articleItem.id} element={<ArticlesOnlyPage articleType="articles" currentTag={tag} defaultPostsOnPage={20} />} />;
+                return (
+                  <Route
+                    path={`/articles/${tag}`}
+                    key={articleItem.id}
+                    element={<ArticlesOnlyPage articleType="articles" currentTag={tag} defaultPostsOnPage={20} />}
+                    loader={async () => {
+                      return <BusyBox />;
+                    }}
+                  />
+                );
               });
             })}
           </Routes>
         </div>
         <div className="articles__content d-flex flex-column justify-content-start align-items-center pb-2 mb-3">
-        <ShowArticles articleType="news" startFrom={1} howMany={10} currentTag=""/>
-        <ShowArticles articleType="articles" startFrom={1} howMany={10} currentTag=""/>
+          <ShowArticles articleType="news" startFrom={1} howMany={10} currentTag="" />
+          <ShowArticles articleType="articles" startFrom={1} howMany={10} currentTag="" />
         </div>
       </div>
     </main>

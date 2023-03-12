@@ -11,6 +11,9 @@ import { useHighestId } from "../../hooks/useHighestId";
 import { useGetArticles } from "../../hooks/useGetArticles";
 import { CategoryModal } from "../../Modals/CategoryModal";
 import { capitalizeFirstLetter } from "../../utils/helperFunctions";
+import { useNavigate } from "react-router-dom";
+
+const Confirm = require("react-confirm-bootstrap");
 
 const currentDate = new Date();
 
@@ -35,9 +38,10 @@ type UserFile = {
   url: string;
 };
 
-export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element => {
+export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): JSX.Element => {
   const user = useUser();
-  const categories = useGetCategories();  
+  const categories = useGetCategories();
+  const navigate = useNavigate();
 
   const [success, setSuccess] = useState(false);
   const [formError, setFormError] = useState(false);
@@ -55,6 +59,8 @@ export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element 
 
   const highestIdFromHook = useHighestId(isNewsOrArticle);
   const [listOfCategories, setListOfCategories] = useState<string[]>([]);
+
+  const [confirm, setConfirm] = useState(false);
 
   // Handle file upload event and update state
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -131,10 +137,29 @@ export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element 
     }
   };
 
+  const handleConfirmation = (e: any) => {
+    e.preventDefault();
+    setConfirm(true);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!userFile) {
+    if (!userFile && !dataToEdit) {
+      console.log(!userFile && !dataToEdit);
+
       alert("Please upload an image first!");
+      return;
+    }
+    if (!data.isOnline) {
+      <Confirm
+        onConfirm={handleConfirmation}
+        body={`Czy chcesz dodać ${isNewsOrArticle === "news" ? "news" : "artykuł"} bez publikacji?\nBędzie można go opublikować w terminie późniejszym`}
+        confirmText="Dodaj bez publikacji"
+        title={`Dodawanie ${isNewsOrArticle === "news" ? "newsa" : "artykułu"}`}>
+        <Button variant="danger">Dodaj bez publikacji</Button>
+      </Confirm>;
+    }
+    if (!confirm) {
       return;
     }
 
@@ -143,7 +168,11 @@ export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element 
       try {
         const response = await addArticle(data);
         setSuccess(true);
-        resetForm();
+        if (dataToEdit) {
+          navigate(`/admin/edit_${isNewsOrArticle}`);
+        } else {
+          resetForm();
+        }
       } catch (err: any) {
         console.error(err);
         setFormError((prev) => !prev);
@@ -154,20 +183,31 @@ export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element 
     }
   };
 
-  const handleSelectCategory = (e: ChangeEvent<HTMLSelectElement>) => setData({...data, category: e.target.value});
+  const handleSelectCategory = (e: ChangeEvent<HTMLSelectElement>) => setData({ ...data, category: e.target.value });
 
   useEffect(() => {
     setIsNewsOrArticle(categoryOfArticle);
   }, [categoryOfArticle]);
 
   useEffect(() => {
-    setData((prev) => ({
-      ...prev,
-      type: isNewsOrArticle === "news" ? "news" : "article",
-      id: highestIdFromHook + 1,
-      category: isNewsOrArticle === "news" ? "news" : categories[0]?.category,
-    }));
-  }, [isNewsOrArticle, highestIdFromHook, categories]);
+    if (dataToEdit) {
+      setData({
+        ...dataToEdit,
+        category: dataToEdit.category ? dataToEdit.category : "news",
+        type: isNewsOrArticle === "news" ? "news" : "article",
+        databaseTitle: `${articleCategory}_id_${dataToEdit.id}`,
+        isAdult: dataToEdit.is_adult === undefined ? false : dataToEdit.is_adult,
+        isOnline: dataToEdit.is_online === undefined ? false : dataToEdit.is_online,
+      });
+    } else {
+      setData({
+        ...initialParameters,
+        type: isNewsOrArticle === "news" ? "news" : "article",
+        id: dataToEdit ? data.id : highestIdFromHook + 1,
+        category: isNewsOrArticle === "news" ? "news" : categories[0]?.category,
+      });
+    }
+  }, [isNewsOrArticle, highestIdFromHook, categories, dataToEdit]);
 
   return (
     <div className="articles__content--wrapper">
@@ -228,7 +268,7 @@ export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element 
             <Form.Label>Dodaj obrazek</Form.Label>
             <Form.Control className="form__control--input" type="file" accept="image/*" onChange={handleChange} />
           </Form.Group>
-          {userFile ? <img src={userFile.url} style={{ maxHeight: "200px" }} alt=""></img> : ""}
+          {userFile ? <img src={userFile.url} style={{ maxHeight: "200px" }} alt=""></img> : dataToEdit ? <img src={data.picture} style={{ maxHeight: "200px" }} alt=""></img> : ""}
         </div>
         <div className="d-flex flex-row justify-content-between align-items-center gap-5">
           <TextInput input="Data dodania" isRequired="true" disabled type="text" name="date" data={data} setData={setData} />
@@ -237,8 +277,8 @@ export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element 
         </div>
         <div className="d-flex flex-row justify-content-between align-items-center gap-5">
           <div className="d-flex flex-column justify-content-between align-items-start w-100">
-            <Form.Check type="switch" label="Opublikować?" id="isOnline" name="isOnline" onChange={handleSwitch} className="me-3"></Form.Check>
-            <Form.Check type="switch" label="Tylko dla dorosłych?" id="isAdult" name="isAdult" onChange={handleSwitch} className="mb-3 me-3"></Form.Check>
+            <Form.Check type="switch" label="Opublikować?" id="isOnline" name="isOnline" onChange={handleSwitch} className="me-3" defaultChecked={dataToEdit && dataToEdit.is_online}></Form.Check>
+            <Form.Check type="switch" label="Tylko dla dorosłych?" id="isAdult" name="isAdult" onChange={handleSwitch} className="mb-3 me-3" defaultChecked={dataToEdit && dataToEdit.is_adult}></Form.Check>
           </div>
           <TextInput input="Autor" isRequired="true" disabled type="text" name="author" data={data} setData={setData} />
           <TextInput input="Nazwa w bazie" isRequired="true" disabled type="text" name="databaseTitle" data={data} setData={setData} />
@@ -258,7 +298,7 @@ export const AddArticle = ({ categoryOfArticle }: AddArticleProps): JSX.Element 
           </Button>
         </div>
       </Form>
-		  {openModal ? <CategoryModal setOpenModal={setOpenModal} openModal={openModal}/> : ''}
+      {openModal ? <CategoryModal setOpenModal={setOpenModal} openModal={openModal} /> : ""}
     </div>
   );
 };

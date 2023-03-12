@@ -10,11 +10,11 @@ import { BusyBox } from "../utils/BusyBox";
 
 export const ContentCarousel = ({ articleType }: ArticleType): JSX.Element | null => {
   const articles = useGetArticles(articleType);
-  const articlesToShowInCarousel = articles.slice(0, 5);
+  const articlesToShowInCarousel = articles.filter((article: ArticleParameters) => article.is_online).slice(0, 5);
 
   return (
     <>
-    <h2 className="d-flex align-self-center">Ostatnie {articleType === "news" ? "newsy" : "artykuły"}</h2>
+      <h2 className="d-flex align-self-center">Ostatnie {articleType === "news" ? "newsy" : "artykuły"}</h2>
       {articlesToShowInCarousel.length === 0 ? (
         <BusyBox />
       ) : (
