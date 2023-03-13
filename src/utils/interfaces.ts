@@ -41,6 +41,15 @@ export interface ModalProps {
   openModal: boolean
 }
 
+export interface ConfirmationModalProps {
+  confirm: boolean;
+  setConfirm: (confirm: boolean) => void,
+  modalText: string;
+  modalHeader: string;
+  open: boolean;
+  close: (confirm: boolean) => void;
+}
+
 export interface BusyBoxProps {
   size?: number
 }

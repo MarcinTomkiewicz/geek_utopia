@@ -68,9 +68,9 @@ export const ArticlesTab = ({ articleType, howMany }: ArticleType): JSX.Element 
                     <div className="d-flex justify-content-evenly align-items-center flex-row w-100 mb-3">
                       <div className="d-flex justify-content-between align-items-center flex-row mt-1 grow-1 w-100" style={{ overflow: "auto" }}>
                         <div style={{ fontSize: "10px" }}>{generateDate(article)}</div>
-                        <div className="d-flex justify-content-end align-items-center flex-row w-50">
+                        <div className="d-flex justify-content-end align-items-center flex-row flex-1">
                           <div
-                            className="star__rating mx-1"
+                            className="star__rating"
                             style={{
                               width: "11px",
                               height: "11px",

@@ -16,7 +16,7 @@
 *::-webkit-scrollbar-thumb {
   background-color: #6c43b8;
   border-radius: 4px;
-  border: 1px inset #ffffff;
+  border: 1px inset #f7fcfc;
 }
 
 *::after {
@@ -316,9 +316,9 @@ select:-webkit-autofill:focus {
 }
 
 .dropdown__menu--item:hover {
-  -webkit-box-shadow: inset 0px 0px 9px 0px white ;
-  -moz-box-shadow: inset 0px 0px 9px 0px white ;
-  box-shadow: inset 0px 0px 9px 0px white ;
+  -webkit-box-shadow: inset 0px 0px 9px 0px white;
+  -moz-box-shadow: inset 0px 0px 9px 0px white;
+  box-shadow: inset 0px 0px 9px 0px white;
   background-color: #723194;
   border-radius: 10px;
 }
@@ -583,16 +583,51 @@ select:-webkit-autofill:focus {
   max-width: 49%;
 }
 
-.star__rating {
-  background-color: #000000;
-  -webkit-clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+.star__wrapper {
+  border: 1px solid rgb(255, 0, 0);
+  border-radius: 100%;
+  width: 5rem;
+  height: 5rem;
+  background: rgb(255, 0, 0);
+  background: radial-gradient(circle, rgba(255, 0, 0, 1) 45%, rgba(255, 255, 255, 1) 45%, rgba(255, 255, 255, 1) 59%, rgba(255, 0, 0, 1) 59%);
+  opacity: 1;
+  position: relative
 }
 
-.star__rating--white {
-  background-color: #ffffff;
+.overlay {
+  width: 5rem;
+  height: 5rem;
+  opacity: 0.7;
+  position: absolute;
+  overflow: visible;
+  z-index: 1;
+  background-color: #a9a9a9;
+  border-radius: 100%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+}
+
+.star__rating {
+  background-color: #f7fcfc;
+  border-radius: 10px;
+  border: 1px solid #f7fcfc;
   -webkit-clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  position: relative;
+  z-index: 1;
+}
+
+.star__wrapper::after {
+  position: absolute;
+  content: "";
+  width: 2rem;
+  height: 2rem;
+  background-color: #003195;
+  border-radius: 100%;
+  top: 50;
+  left: 50;
 }
 
 .logout__button {
@@ -695,6 +730,7 @@ select:-webkit-autofill:focus {
 }
 
 @media screen and (max-width: 800px) {
+
   form,
   main {
     padding-top: 0;

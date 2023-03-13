@@ -27,15 +27,14 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
 
   const partOfStarSelected = (averageRating - Math.floor(averageRating)) * 100;
 
-  console.log(averageRating);
-  
-
+  //
   const handleChangeStarRating = async (e: any) => {
     if (!articleType) {
       return;
     }
     const articleName = `${articleType === "articles" ? "article" : articleType}_id_${currentArticle.id}`;
     currentArticle.rating.push(parseInt(e.target.id));
+
     await updateDoc(doc(db, "content", articleType), {
       [articleName]: {
         ...currentArticle,
@@ -82,40 +81,45 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
             {[1, 2, 3, 4, 5].map((el) => {
               if (Math.floor(averageRating) >= el) {
                 return (
-                  <button
-                    key={el}
-                    className="star__rating"
-                    id={`${el}`}
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                    }}
-                    onClick={handleChangeStarRating}></button>
+                  <button onClick={handleChangeStarRating} key={el} id={el.toString()} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
+                    <div
+                      id={el.toString()}
+                      className="star__rating"
+                      style={{
+                        width: "2rem",
+                        height: "2rem",
+                      }}></div>
+                  </button>
                 );
               } else if (Math.floor(averageRating) < el && el - averageRating > 0 && el - averageRating < 1) {
                 return (
-                  <button
-                    key={el}
-                    id={`${el}`}
-                    className="star__rating--white"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      background: `linear-gradient(90deg, rgba(0,0,0,1) ${partOfStarSelected.toString()}%, rgba(255,255,255,1) ${partOfStarSelected.toString()}%)`,
-                    }}
-                    onClick={handleChangeStarRating}></button>
+                  <>
+                    <button onClick={handleChangeStarRating} key={el} id={el.toString()} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
+                      <div id={el.toString()} className="overlay" style={{ clipPath: `inset(0 0 0 ${partOfStarSelected}%)` }}></div>
+                      <div
+                        id={el.toString()}
+                        className="star__rating"
+                        style={{
+                          width: "2rem",
+                          height: "2rem",
+                        }}></div>
+                    </button>
+                  </>
                 );
               } else {
                 return (
-                  <button
-                    key={el}
-                    id={`${el}`}
-                    className="star__rating--white"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                    }}
-                    onClick={handleChangeStarRating}></button>
+                  <>
+                    <button onClick={handleChangeStarRating} key={el} id={el.toString()} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
+                      <div id={el.toString()} className="overlay" style={{ clipPath: `inset(0 0 0 0)` }}></div>
+                      <div
+                        id={el.toString()}
+                        className="star__rating"
+                        style={{
+                          width: "2rem",
+                          height: "2rem",
+                        }}></div>
+                    </button>
+                  </>
                 );
               }
             })}

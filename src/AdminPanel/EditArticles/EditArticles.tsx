@@ -1,6 +1,6 @@
 import { deleteDoc, deleteField, doc, DocumentData, onSnapshot, updateDoc } from "firebase/firestore";
-import { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Form, Modal } from "react-bootstrap";
 import { db } from "../../config/firebaseConfig";
 import { useGetArticles } from "../../hooks/useGetArticles";
 import ReactPaginate from "react-paginate";
@@ -16,12 +16,41 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
 
   const [confirm, setConfirm] = useState(false);
 
+  const [searchResults, setSearchResults] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = articles.slice(indexOfFirstPost, indexOfLastPost);
+  const [currentPosts, setCurrentPosts] = useState(articles.slice(indexOfFirstPost, indexOfLastPost));
+  const [searchedPosts, setSearchedPosts] = useState<ArticleParameters[]>();
+  
+  useEffect(() => {
+    setSearchResults("");
+  }, [articleType])
+
+  useEffect(() => {
+    if (articles === undefined) return;
+    setSearchedPosts(
+      articles.filter((article: ArticleParameters) => {
+        if (searchResults !== "") {
+          return article.title.toLowerCase().includes(searchResults.toLowerCase());
+        } else {
+          return true;
+        }
+      })
+    );
+  }, [articles, searchResults, currentPage]);
+
+  useEffect(() => {
+    if (searchedPosts === undefined) return;
+    setCurrentPosts(searchedPosts.slice(indexOfFirstPost, indexOfLastPost));
+    if (currentPosts.length < postsPerPage) {
+      setCurrentPage(1)
+    }
+    
+  }, [searchedPosts]);
 
   const paginate = ({ selected }: any) => {
     setCurrentPage(selected + 1);
@@ -34,14 +63,6 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
 
   const deleteItem = async (e: any) => {
     if (articleType === undefined) {
-      return;
-    }
-
-    // <Confirm onConfirm={handleConfirmation} body="Czy chcesz usunąć artykuł? Tej operacji nie można cofnąć!" confirmText="Usuwanie artykułu" title="Usuwanie artykułu">
-    //   <Button variant="danger">Dodaj bez publikacji</Button>
-    // </Confirm>;
-
-    if (!confirm) {
       return;
     }
 
@@ -61,9 +82,17 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
     setShowModal(false);
   };
 
+  const performSearch = (e: any) => {
+    e.preventDefault();
+    setSearchResults(e.target.value);
+  };
+  
   return (
     <div className="d-flex flex-column p-2 align-items-center gap-2">
-      {articles !== undefined
+      <Form className="d-flex w-100 justify-content-end me-2">
+        <Form.Control type="search" placeholder={`Szukaj ${articleType === "news" ? "newsa" : "artykułu"}`} className="w-25" aria-label="Search" onChange={performSearch} value={searchResults}/>
+      </Form>
+      {currentPosts.length > 0
         ? currentPosts.map((article: ArticleParameters) => {
             return (
               <div
@@ -78,7 +107,7 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
                   className="d-flex align-items-center justify-content-center text-center"
                   style={{
                     borderRight: "white 1px solid",
-                    width: "20%",
+                    width: "30%",
                   }}
                   onClick={() => openModal(article)}>
                   <img
@@ -91,17 +120,16 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
                   />
                 </div>
                 <div
-                  className="d-flex px-2 pt-2 align-items-center justify-content-center text-center"
+                  className="d-flex px-2 pt-2 align-items-center justify-content-center text-center w-50"
                   style={{
                     borderLeft: "white 1px solid",
                     borderRight: "white 1px solid",
-                    width: "20%",
                   }}
                   onClick={() => openModal(article)}>
-                  <div style={{ fontWeight: "bold" }}>{article.title}</div>
+                  <div className="d-flex w-100 justify-content-between align-items-center" style={{ fontWeight: "bold" }}><div className="d-flex grow-1 text-start w-75">{article.title}</div> <div className={`${article.is_online ? "pulse__green" : "pulse__red"} mx-2`}></div></div>
                 </div>
                 <div
-                  className="d-flex px-2 pt-2 align-items-center justify-content-start text-left"
+                  className="d-flex px-2 pt-2 align-items-center justify-content-start text-left w-100 grow-1"
                   style={{
                     borderLeft: "white 1px solid",
                     borderRight: "white 1px solid",
@@ -137,8 +165,8 @@ export const EditArticles = ({ articleType }: ArticleType): JSX.Element => {
               </div>
             );
           })
-        : ""}
-      {Math.ceil(articles.length / postsPerPage) > 1 ? (
+        : <div>Żaden {articleType === "news" ? "News" : "Artykuł"} nie spełnia kryteriów wyszukiwania.</div>}
+      {Math.ceil(searchedPosts ? searchedPosts.length / postsPerPage : 1) > 1 ? (
         <div className="pt-2">
           <ReactPaginate
             onPageChange={paginate}

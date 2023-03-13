@@ -12,6 +12,7 @@ import { useGetArticles } from "../../hooks/useGetArticles";
 import { CategoryModal } from "../../Modals/CategoryModal";
 import { capitalizeFirstLetter } from "../../utils/helperFunctions";
 import { useNavigate } from "react-router-dom";
+import { ConfirmationModal } from "../../Modals/ConfirmationModal";
 
 const Confirm = require("react-confirm-bootstrap");
 
@@ -60,6 +61,7 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
   const highestIdFromHook = useHighestId(isNewsOrArticle);
   const [listOfCategories, setListOfCategories] = useState<string[]>([]);
 
+  const [confirmationModal, setConfirmationModal] = useState(false)
   const [confirm, setConfirm] = useState(false);
 
   // Handle file upload event and update state
@@ -135,12 +137,7 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
     if (e?.currentTarget.id === "cancel") {
       setSuccess(false);
     }
-  };
-
-  const handleConfirmation = (e: any) => {
-    e.preventDefault();
-    setConfirm(true);
-  };
+  };  
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -150,19 +147,16 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
       alert("Please upload an image first!");
       return;
     }
+    
     if (!data.isOnline) {
-      <Confirm
-        onConfirm={handleConfirmation}
-        body={`Czy chcesz dodać ${isNewsOrArticle === "news" ? "news" : "artykuł"} bez publikacji?\nBędzie można go opublikować w terminie późniejszym`}
-        confirmText="Dodaj bez publikacji"
-        title={`Dodawanie ${isNewsOrArticle === "news" ? "newsa" : "artykułu"}`}>
-        <Button variant="danger">Dodaj bez publikacji</Button>
-      </Confirm>;
+      setConfirmationModal(true)
+    }
+    else {
+      setConfirm(true)
     }
     if (!confirm) {
       return;
     }
-
     await handleUpload();
     if (data.databaseTitle !== "" && data.picture !== "") {
       try {
@@ -299,6 +293,7 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
         </div>
       </Form>
       {openModal ? <CategoryModal setOpenModal={setOpenModal} openModal={openModal} /> : ""}
+      {confirmationModal ? <ConfirmationModal open={confirmationModal} close={setConfirmationModal} confirm={confirm} setConfirm={setConfirm} modalText={`Czy na pewno chcesz dodać ${categoryOfArticle === "news" ? "newsa" : "artykuł"} bez publikowania?`} modalHeader="Dodawanie bez publikacji" /> : ''}
     </div>
   );
 };
