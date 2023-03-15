@@ -43,6 +43,18 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
     });
   };
 
+  const [active, setActive] = useState<number>();
+
+  const handleMouseOver = (e: any) => {
+    console.log(e.target.id);
+
+    setActive(e.target.id);
+  };
+
+  const handleMouseOut = () => {
+    setActive(0);
+  };
+
   return (
     <>
       {!currentArticle ? (
@@ -81,7 +93,8 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
             {[1, 2, 3, 4, 5].map((el) => {
               if (Math.floor(averageRating) >= el) {
                 return (
-                  <button onClick={handleChangeStarRating} key={el} id={el.toString()} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
+                  <button onClick={handleChangeStarRating} key={el} id={el.toString()} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
+                    {active && active < el ? <div id={el.toString()} className="overlay"></div> : ""}
                     <div
                       id={el.toString()}
                       className="star__rating"
@@ -94,8 +107,10 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
               } else if (Math.floor(averageRating) < el && el - averageRating > 0 && el - averageRating < 1) {
                 return (
                   <>
-                    <button onClick={handleChangeStarRating} key={el} id={el.toString()} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
-                      <div id={el.toString()} className="overlay" style={{ clipPath: `inset(0 0 0 ${partOfStarSelected}%)` }}></div>
+                    <button onClick={handleChangeStarRating} key={el} id={el.toString()} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
+                      {!active ? <div id={el.toString()} className="overlay" style={{ clipPath: `inset(0 0 0 ${partOfStarSelected}%)` }}></div> : ""}
+                      {active && active < el ? <div id={el.toString()} className="overlay" style={{ clipPath: `inset(0 0 0 0)` }}></div> : ""}
+
                       <div
                         id={el.toString()}
                         className="star__rating"
@@ -109,8 +124,8 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
               } else {
                 return (
                   <>
-                    <button onClick={handleChangeStarRating} key={el} id={el.toString()} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
-                      <div id={el.toString()} className="overlay" style={{ clipPath: `inset(0 0 0 0)` }}></div>
+                    <button onClick={handleChangeStarRating} key={el} id={el.toString()} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} className="d-flex justify-content-center align-items-center mx-1 star__wrapper">
+                    {active && active >= el ? "" : <div id={el.toString()} className="overlay" style={{ clipPath: `inset(0 0 0 0)` }}></div>}
                       <div
                         id={el.toString()}
                         className="star__rating"
@@ -127,7 +142,6 @@ export const ShowFullArticle = ({ articleType, id }: ArticleType) => {
           <div>{currentArticle.rating.length === 0 || currentArticle.rating === undefined ? "Nie ma jeszcze ocen" : `Ocena łączna: ${averageRating.toFixed(2)} / Ocen: ${currentArticle.rating?.length}`}</div>
         </Fragment>
       )}
-      ;
     </>
   );
 };
