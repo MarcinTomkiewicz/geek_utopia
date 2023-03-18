@@ -68,7 +68,7 @@ export const MainContent = () => {
             {categories.map((category, i) => {
               return (
                 <Route
-                  path={`/articles/${category.category.toLowerCase()}`}
+                  path={`/articles/${category.category}`}
                   key={i}
                   element={<ArticlesOnlyPage articleType="articles" defaultPostsOnPage={20} currentTag="" category={category.category} />}
                   loader={async () => {

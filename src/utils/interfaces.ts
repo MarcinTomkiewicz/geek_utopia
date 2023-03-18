@@ -108,4 +108,7 @@ export interface KeyValueInterface {
 export interface CategoryInterface {
   id: number;
   category: string;
+  abbreviation: string;
+  polish: string;
+  english: string;
 }

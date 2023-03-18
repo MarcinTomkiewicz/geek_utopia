@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useGetCategories } from "../hooks/useGetCategories";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";
 import { useLanguageSettings } from "../hooks/useLanguageSettings";
@@ -11,6 +11,13 @@ export const DropdownMenu = forwardRef<any, any>(({ showDropdown, setShowDropdow
   const langCode = useLanguageSettings();
   const categories = useGetCategories();
 
+  const [categoryLocale, setCategoryLocale] = useState(language.categories)
+
+  useEffect(() => {
+    if (!language.categories) return;
+    setCategoryLocale(language.categories)
+  }, [language])
+
   return (
     <div className="dropdown-wrapper">
       <button onClick={setShowDropdown} className="button__dropdown">
@@ -19,9 +26,11 @@ export const DropdownMenu = forwardRef<any, any>(({ showDropdown, setShowDropdow
             </span>
       </button>
       <ul className={`dropdown__list ${showDropdown ? "active" : ""}`} ref={ref}>
-        {categories.map((category: CategoryInterface, i: number) => (
-          <Link to={`articles/${category.category.toLowerCase()}`} className="general__text" key={i} style={{cursor: "pointer"}}><li key={i} className="dropdown__menu--item">{category?.category === "horror" ? "Horror [18+]" : capitalizeFirstLetter(category?.category)}</li></Link>
-        ))}
+        {categories.map((category: CategoryInterface, i: number) => {
+          console.log(category?.abbreviation, categoryLocale);
+          
+          return (<Link to={`articles/${category.category}`} className="general__text" key={i} style={{cursor: "pointer"}}><li key={i} className="dropdown__menu--item">{category?.category === "horror" ? "Horror [18+]" : capitalizeFirstLetter(category?.category)}</li></Link>
+        )})}
       </ul>
     </div>
   );

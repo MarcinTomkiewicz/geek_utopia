@@ -6,16 +6,34 @@ import { CategoryInterface, ModalProps } from "../utils/interfaces";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
+const initialData: CategoryInterface = {
+  category: "",
+  id: 0,
+  abbreviation: "",
+  polish: "",
+  english: "",
+}
+
 export const CategoryModal = ({ setOpenModal, openModal }: ModalProps): JSX.Element => {
   const categoriesIds = useHighestId("categories");
-  const [category, setCategory] = useState<CategoryInterface>({ category: "", id: 0 });
+  const [category, setCategory] = useState<CategoryInterface>(initialData);
 
   const addCategory = async (data: CategoryInterface) => {
     await updateDoc(doc(db, "content", "categories"), {
       [`category_id_${data.id}`]: {
         category: data.category,
         id: data.id,
+        abbreviation: data.abbreviation,
       },
+    });
+  };
+
+  const addLocale = async (data: CategoryInterface) => {
+    await updateDoc(doc(db, "language_packs", "categories"), {
+      [data.abbreviation]: [
+        data.polish,
+        data.english,
+      ],
     });
   };
 
@@ -26,17 +44,35 @@ export const CategoryModal = ({ setOpenModal, openModal }: ModalProps): JSX.Elem
     }));
   }, [categoriesIds]);
 
+  useEffect(() => {
+    setCategory((prev: CategoryInterface) => ({
+      ...prev,
+      abbreviation: prev.abbreviation.toLowerCase()
+    }));
+  }, [category.abbreviation]);
+
+  useEffect(() => {
+    setCategory((prev: CategoryInterface) => ({
+      ...prev,
+      category: prev.english.toLowerCase().split(' ').join('_'),
+    }));
+  }, [category.english]);
+
   const resetForm = () => {
     setCategory((prev: CategoryInterface) => ({
       category: "",
       id: prev.id,
+      abbreviation: "",
+      polish: "",
+      english: "",
     }));
-  };
+  };  
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
       const success = await addCategory(category);
+      const localeSuccess = await addLocale(category);
       resetForm();
     } catch (err: any) {
       console.error(err);
@@ -68,7 +104,10 @@ export const CategoryModal = ({ setOpenModal, openModal }: ModalProps): JSX.Elem
             alignItems: "center",
           }}
           onSubmit={handleSubmit}>
-          <TextInput input="Nazwa kategorii (po angielsku)" isRequired="true" type="text" name="category" data={category} setData={setCategory} />
+          <TextInput input="Nazwa kategorii (po polsku)" isRequired="true" type="text" name="polish" data={category} setData={setCategory} />
+          <TextInput input="Nazwa kategorii (po angielsku)" isRequired="true" type="text" name="english" data={category} setData={setCategory} />
+          <TextInput input="Skrót" isRequired="true" type="text" name="abbreviation" data={category} setData={setCategory} />
+          <TextInput input="Identyfikator kategorii" disabled isRequired="true" type="text" name="category" data={category} setData={setCategory} />
           <TextInput input="Id kategorii" isRequired="true" disabled type="text" name="id" data={category} setData={setCategory} />
           <div
             style={{
