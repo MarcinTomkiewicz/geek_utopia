@@ -38,7 +38,8 @@ export interface ShowUserProfileProps {
 
 export interface ModalProps {
   setOpenModal: (openModal: boolean) => void; 
-  openModal: boolean
+  openModal: boolean;
+  categoryToEdit?: CategoryInterface;
 }
 
 export interface ConfirmationModalProps {

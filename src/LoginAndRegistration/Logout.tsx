@@ -1,4 +1,4 @@
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, } from "firebase/auth";
 import { Button, Placeholder } from "react-bootstrap";
 import { useUser } from "../hooks/useUser";
 import { useLanguagePacks } from "../hooks/useLanguagePacks";

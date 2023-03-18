@@ -50,7 +50,9 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
 
   const [userFile, setUserFile] = useState<UserFile | null>(null);
   const [percent, setPercent] = useState(0);
-  const [openModal, setOpenModal] = useState(false);
+  const [openCategoryModal, setOpenCategoryModal] = useState(false);
+  const [openEditCategoryModal, setOpenEditCategoryModal] = useState(false);
+  const [chosenCategory, setChosenCategory] = useState(categories[0])
 
   const [isNewsOrArticle, setIsNewsOrArticle] = useState(categoryOfArticle);
   const [articleCategory, setArticleCategory] = useState<string[]>([""]);
@@ -184,6 +186,13 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
   }, [categoryOfArticle]);
 
   useEffect(() => {
+    categories.forEach((category: CategoryInterface) => {
+      if (category.category === data.category)
+      setChosenCategory(category)
+  })
+  }, [data]) 
+
+  useEffect(() => {
     if (dataToEdit) {
       setData({
         ...dataToEdit,
@@ -240,8 +249,15 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
                 })}
               </Form.Select>
             </FloatingLabel>
-            <Button variant="primary" onClick={() => setOpenModal(true)}>
+            <Button variant="primary" onClick={() => {
+              setOpenCategoryModal(true)
+              }}>
               Dodaj kategorię artykułów
+            </Button>
+            <Button variant="info" onClick={() => {
+              setOpenEditCategoryModal(true)
+              }}>
+              Edytuj kategorię artykułów
             </Button>
           </div>
         ) : (
@@ -292,7 +308,8 @@ export const AddArticle = ({ categoryOfArticle, dataToEdit }: AddArticleProps): 
           </Button>
         </div>
       </Form>
-      {openModal ? <CategoryModal setOpenModal={setOpenModal} openModal={openModal} /> : ""}
+      {openCategoryModal ? <CategoryModal setOpenModal={setOpenCategoryModal} openModal={openCategoryModal} /> : ""}
+      {openEditCategoryModal ? <CategoryModal setOpenModal={setOpenEditCategoryModal} openModal={openEditCategoryModal} categoryToEdit={chosenCategory} /> : ""}
       {confirmationModal ? <ConfirmationModal open={confirmationModal} close={setConfirmationModal} confirm={confirm} setConfirm={setConfirm} modalText={`Czy na pewno chcesz dodać ${categoryOfArticle === "news" ? "newsa" : "artykuł"} bez publikowania?`} modalHeader="Dodawanie bez publikacji" /> : ''}
     </div>
   );
